@@ -75,7 +75,7 @@ svn://ip地址/svnrepos       （别画蛇添足加端口号）
 
 提示：一般svn的内容在svnrepos下的 db/revs 里面,但可能无法满足你在服务器上查看代码，所以下面会有一些附加项。
 
-13.服务端的更新到web目录，第一步和checkout类似。
+13.服务端的更新到web目录，和checkout一样，co就是checkout的简写。
 svn co svn://你的ip 你想放在那个目录(这样的创建到web目录如果更新可以在那个目录下直接svn update，但是有svn的隐藏文件)
 svn export svn：//你的ip 你想放在哪个目录(这样的web目录没有svn隐藏文件，但是不能直接用svn update更新，推荐上面的)
 个人实践 ->   svn co svn://localhost/svnrepos  /data/wwwroot/svnrepos  --username 用户名 --password 密码（用户名密码不添加，执行后需输入）

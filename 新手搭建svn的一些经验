@@ -1,0 +1,109 @@
+环境linux nginx centos7;
+1.安装svn服务端
+yum -y install subversion
+
+2.查看安装路径等信息
+rpm -ql subversion
+
+3.查看svn帮助信息
+svn help
+
+确认安装完成后，就可以开始了（yum安装一般不会有问题）。
+
+4.创建svn版本库目录
+mkdir -p /var/svn/svnrepos         （-p 就是除了要新创建svn文件夹，还要创建其下面的svnrepos文件夹，多层级新增）
+
+5.创建版本库
+svnadmin create /var/svn/svnrepos
+
+恭喜完成第二步，可以开始配置了。
+
+6.进入conf目录（该svn版本库配置文件）
+authz文件是权限控制文件
+passwd是帐号密码文件
+svnserve.conf SVN服务配置文件
+
+7.authz配置用户权限
+在末尾添加如下代码：
+[group]
+test = user1,user2 //创建test用户组，并添加user1 user2用户
+//指定根目录先的权限（这边可以指定用户组，也可以直接指定用户权限）
+[/]
+@test=rw
+w=r
+
+8.passwd配置用户名密码
+[users]
+user1 = 12345678       
+user2 = 12345677
+w = 12345679
+
+9.修改svnserve.conf文件
+打开下面的几个注释：
+anon-access = read #匿名用户可读
+
+auth-access = write #授权用户可写
+
+password-db = passwd #使用哪个文件作为账号文件
+
+authz-db = authz #使用哪个文件作为权限文件
+
+realm = /var/svn/svnrepos # 认证空间名，版本库所在目录
+注意:去掉注释后，前面不能留空格，会报错，如下：
+### have the same password database, and vice versa.  The default realm
+### is repository's uuid.
+realm = /var/svn/svnrepos
+
+然后，就完成基础配置了。
+
+10.启动svn版本库，这里启动大仓库（注意是大仓库，不然会报错）
+svnserve -d -r /var/svn/
+
+11.SVN默认的打开端口是3690
+可以通过下面的命令查看：
+netstat -antp | grep svn
+tcp        0      0 0.0.0.0:3690            0.0.0.0:*               LISTEN      66486/svnserve 
+
+12.centos7 打开防火墙端口
+systemctl status firewalld  //查看firewalld状态
+systemctl start firewalld //开启防火墙
+$ sudo firewall-cmd --permanent --add-port=3690/tcp  //开放端口
+$ sudo firewall-cmd --reload //重启防火墙
+
+然后就可以愉快的在windows下svn进行测试了，
+svn://ip地址/svnrepos       （别画蛇添足加端口号）
+
+提示：一般svn的内容在svnrepos下的 db/revs 里面,但可能无法满足你在服务器上查看代码，所以下面会有一些附加项。
+
+13.服务端的更新到web目录，第一步和checkout类似。
+svn co svn://你的ip 你想放在那个目录(这样的创建到web目录如果更新可以在那个目录下直接svn update，但是有svn的隐藏文件)
+svn export svn：//你的ip 你想放在哪个目录(这样的web目录没有svn隐藏文件，但是不能直接用svn update更新，推荐上面的)
+个人实践 ->   svn co svn://localhost/svnrepos  /data/wwwroot/svnrepos  --username 用户名 --password 密码（用户名密码不添加，执行后需输入）
+
+完成后，就可以看到项目内容，但无法更新，这时候就需要用到钩子。
+
+14.添加钩子
+cd  /var/svn/svnrepos/hooks/ 
+cp cp post-commit.tmpl post-commit (复制这份模板文件，因为svn将要执行的是post-commit文件)
+vim post-commit 
+其实这边不复制自己添加一个post-commit文件也是可以的
+
+简单的添加，如下内容：
+#!/bin/bash
+export LANG=zh_CN.utf-8
+/usr/bin/svn update --username 用户名 --password 密码  /data/wwwroot/svnrepos 
+
+wq!保存退出，此时已经完成更新命令。
+
+然后需要chmod  a+x  post-commit  (或者chmod  777 post-commit)，设置post-commit文件为可以执行权限(若不设置则会出现commit false 255错误)。
+
+到这里就介绍结束，当然svn还有其他功能大家可以自己探索，个人经验仅供参考。
+
+参考文章(/博文):
+https://www.cnblogs.com/php48/p/7700131.html
+https://www.cnblogs.com/klb561/p/9901411.html
+https://www.cnblogs.com/fuyuanming/p/6123395.html
+
+
+
+

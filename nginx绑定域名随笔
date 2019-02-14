@@ -1,0 +1,47 @@
+配置域名，首先要拥有域名，之后你可以使用这个域名，或者解析它，这些就不提了。
+下门是配置域名，
+可以在nginx.conf 最后用include  /etc/nginx/vhost/*.conf;（位置不重要，就是包含*.conf）
+然后你可以以域名为文件夹名称，在文件中配置绑定域名信息，如下：
+server {
+        listen 80;
+
+        server_name  **.qdgg17.***;
+
+        root  /usr/share/nginx/data/wwwroot/svnrepos/public;
+
+        index index.php index.html index.htm;
+
+        error_page  404 ./404.html;
+
+        access_log  /data/logs/kj.qdgg17.top.log main;
+
+        location / {
+                index index.php;
+                if ( !-e $request_filename){
+                        rewrite ^/(.*)$ /index.php?s=$1 last;
+                        break;
+                }
+        }
+
+        location ~ .*\.(gif|jpg|jpeg|png|bmp|swf|zip)$ {
+                expires      30d;
+        }
+
+        location ~ .*\.(js|css)?$ {
+                expires      30d;
+        }
+
+        location ~ .*\.(php|php5)?$ {
+              fastcgi_pass  127.0.0.1:9000;
+              fastcgi_index index.php;
+              fastcgi_param  SCRIPT_FILENAME /usr/share/nginx/data/wwwroot/svnrepos/public$fastcgi_script_name;
+              include fastcgi_params;
+
+         }
+}
+几个注意点：
+listen 监听端口
+root 根目录
+index 
+其他的依据需要配置，当然需要使用php还需要配置location ~ .*\.(php|php5)?$，内容如上，
+注意： fastcgi_param这边放的路劲，必须和更目录root一致，不然会出问题。

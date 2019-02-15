@@ -1,0 +1,14 @@
+SQL语句应该考虑哪些安全性？
+1.SQL查询的安全方案
+2.延伸:MySQL的其他安全设置
+
+1.使用预处理防止Sql注入;
+防止Sql注入一直是一个重要的问题。
+例如: delete from user where id=1; //删除掉id为1的用户
+然而我们可能使用get方式，用url方式delete?id=1传递参数，这样就可能被注入，
+delete?id=1 or 1=1; 这样最后会出现 delete from user where id=1 or 1=1 把整张表的数据都给删除了。
+
+但是用预处理却可以避免这种情况。
+prepare
+
+

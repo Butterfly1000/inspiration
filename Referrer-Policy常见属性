@@ -1,0 +1,44 @@
+Referrer-Policy常见属性
+Referrer-Policy（来源协议）用来规定什么情况下显示Referer字段及refer字段内显示多少信息。
+
+备注: referer实际上是对referrer的误写，因为写错的人多了也就正确了。。请求头的refer延续了这个错误，但referrer-policy并没有。
+
+http请求分为请求行，请求头以及请求体，而请求头又分为general，request headers，此字段设置与general中，用来约定request headers中的referer
+
+ 
+
+no-referrer
+
+任何情况下都不发送referer
+
+no-referrer-when-downgrade
+
+在同等安全等级下（例如https页面请求https地址），发送referer，但当请求方低于发送方（例如https页面请求http地址），不发送referer
+
+origin
+
+仅仅发送origin，即protocal+host
+
+origin-when-cross-origin
+
+跨域时发送origin
+
+same-origin
+
+当双方origin相同时发送
+
+strict-origin
+
+当双方origin相同且安全等级相同时发送
+
+unfafe-url
+
+任何情况下都显示完整的referer
+
+[转]https://www.cnblogs.com/yanze/p/7919209.html
+
+设置
+<meta name="referrer" content="no-referrer|no-referrer-when-downgrade|origin|origin-when-crossorigin|unsafe-url">
+
+<a href="http://example.com" referrer="no-referrer|origin|unsafe-url">xxx</a>
+【转】https://www.cnblogs.com/amyzhu/p/9716493.html

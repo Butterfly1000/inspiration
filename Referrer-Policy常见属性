@@ -40,3 +40,6 @@ unfafe-url
 
 <a href="http://example.com" referrer="no-referrer|origin|unsafe-url">xxx</a>
 【转】https://www.cnblogs.com/amyzhu/p/9716493.html
+
+但根据个人实验，在谷歌和360浏览器，<meta> 需要 <a>跳转设置的referrer才有效。
+第二种没有效果。

@@ -5,8 +5,6 @@ Referrer-Policy（来源协议）用来规定什么情况下显示Referer字段�
 
 http请求分为请求行，请求头以及请求体，而请求头又分为general，request headers，此字段设置与general中，用来约定request headers中的referer
 
- 
-
 no-referrer
 
 任何情况下都不发送referer

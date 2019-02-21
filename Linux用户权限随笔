@@ -1,0 +1,24 @@
+Linux服务除了拥有root这个超级用户外，也会因为需求而需要新增一些用户。（环境centos7）
+切换：
+超级用户root  普通用户admin（以admin为例）
+root 切换 admin  su - admin
+admin 切换 root  su - root  然后还需要根据提示正确输入超级账号密码
+如果出现su: Authentication failure，这里切换的是系统用户,现在还不清楚为什么。
+只需要再进行一次就行了。(对了，切换到超级用户，可以直接用su就行了，>su)
+
+查看用户信息：
+vi /etc/group      或者用 cat /etc/group
+vi /etc/passwd
+
+查看在线用户登录信息命令：who
+但是切换用户后，还是会以初始登录信息状态显示。
+
+一、用户分类
+1.所有者 u;
+2.所属组 g;
+3.其它用户 o;
+4.所有用户 a;
+
+【参考】https://www.cnblogs.com/anech/p/6920509.html
+
+

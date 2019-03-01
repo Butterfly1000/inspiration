@@ -53,3 +53,25 @@ Make sure that you run /usr/local/bin/phpize in the top level source directory o
 http://download.redis.io/releases/redis-2.8.3.tar.gz
 
 ./ext_skel
+
+/home/work/downloads/php-7.2.5/ext/ext_skel --extname=redis_ext --proto=./redis
+
+https://www.jb51.net/article/99775.htm
+ 
+ 操作：php7 redis
+ git clone https://github.com/nicolasff/phpredis
+ cd phpredis
+ phpize
+ ./configure --with-php-config=/home/work/soft/php/bin/php-config
+ make
+ make install
+ 
+ 这时候生成/home/work/soft/php/lib/php/extensions/no-debug-non-zts-20170718/redis.so
+ 
+ vi php.ini
+ 添加
+ extension="redis.so"
+ 
+ nginx -s reload 重启
+
+

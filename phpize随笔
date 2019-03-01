@@ -73,5 +73,23 @@ https://www.jb51.net/article/99775.htm
  extension="redis.so"
  
  nginx -s reload 重启
+ php-fpm  重启
+ systemctl start php-fpm.service 启动
+ systemctl stop php-fpm.service  停止
+ systemctl restart php-fpm.service 重启
+  ---------------------------------------
+  关于启动php-fpm报错 ERROR: unable to bind listening socket for address ‘127.0.0.1:9000’: Address already in use (98)
+ 
+ 查看日志：php-fpm.log ,发现php-fpm已经在运行了呢。
+ 通过
+ netstat -lntp 或 netstat -lnp|grep 9000
+ kill -9 pid  关闭端口
+ 发现会有很多php-fpm
+ 
+ 解决方法：
+ killall php-fpm
+ 然后重启php-fpm。
+ 
+ 
 
 

@@ -40,10 +40,10 @@ $skill
 ${skill}
 
 好吧，除了规范性，加花括号也是有好处的。
-skill=‘Js’；
+skill=‘Java’；
 echo "I am good at ${skill}Script"
 那么会打印出什么呢？
-I am good at JsScript
+I am good at JavaScript
 这时候如果没加花括号呢？
 会去找$skillScript变量，这个变量因为没定义，所以为空。
 I am good at
@@ -87,8 +87,54 @@ string="runoob is a great site"
 echo ${string:1:4} # 输出 unoo
 
 查找子字符串
+查找字符 i 或 o 的位置(哪个字母先出现就计算哪个)：
+string="runoob is a great site"
+echo `expr index "$string" io`  # 输出 4
+
+★Shell 数组
+bash支持一维数组（不支持多维数组），并且没有限定数组的大小。
+类似于 C 语言，数组元素的下标由 0 开始编号。获取数组中的元素要利用下标，下标可以是整数或算术表达式，其值应大于或等于 0。
+
+定义数组
+在 Shell 中，用括号来表示数组，数组元素用"空格"符号分割开。定义数组的一般形式为：
+形式一：
+array=(value0 value1 value2 value3 value4)
+array=(
+  value0
+  value1
+  value2
+  value3
+  value4
+)
+形式二:
+array[0]=value0
+array[1]=value2
 
 
+读取数组
+echo ${array[0]}
 
+读取所有数组元素
+echo $(array[@])
+
+获取数组的长度
+# 取得数组元素的个数
+length=${#array_name[@]}
+# 或者
+length=${#array_name[*]}
+# 取得数组单个元素的长度
+lengthn=${#array_name[n]}
+
+★Shell 注释
+以 # 开头的行就是注释，会被解释器忽略。
+
+多行注释还可以使用以下格式：
+:<<EOF
+注释内容...
+注释内容...
+注释内容...
+EOF
+
+注意:EOF 也可以使用其他符号
 
 

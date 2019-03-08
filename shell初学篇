@@ -1,3 +1,4 @@
+【参考/转】http://www.runoob.com/linux/linux-shell.html
 打开文本编辑器(可以使用 vi/vim 命令来创建文件)，新建一个文件 test.sh，扩展名为 sh（sh代表shell），扩展名并不影响脚本执行。
 见名知意就好，如果你用 php 写 shell 脚本，扩展名就用 php 好了。
 
@@ -48,6 +49,22 @@ I am good at JsScript
 I am good at
 
 只读变量
+#!/bin/bash
+myUrl="http://www.google.com"
+readonly myUrl     #只读变量
+myUrl="http://www.runoob.com"  #这些修改就会报错
+
+删除变量
+unset variable_name #这个很简单
+
+★变量类型
+运行shell时，会同时存在三种变量：
+
+1) 局部变量 局部变量在脚本或命令中定义，仅在当前shell实例中有效，其他shell启动的程序不能访问局部变量。
+2) 环境变量 所有的程序，包括shell启动的程序，都能访问环境变量，有些程序需要环境变量来保证其正常运行。必要的时候shell脚本也可以定义环境变量。
+3) shell变量 shell变量是由shell程序设置的特殊变量。shell变量中有一部分是环境变量，有一部分是局部变量，这些变量保证了shell的正常运行
+
+★Shell 字符串
 
 
 

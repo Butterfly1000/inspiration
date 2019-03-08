@@ -65,7 +65,28 @@ unset variable_name #这个很简单
 3) shell变量 shell变量是由shell程序设置的特殊变量。shell变量中有一部分是环境变量，有一部分是局部变量，这些变量保证了shell的正常运行
 
 ★Shell 字符串
+单引号
+这家伙是个一条筋，单引号里面都是字符串，变量无效，直接看成字符串。
 
+双引号
+双引号兼容性就很不错了，双引号内允许使用变量
+
+拼接字符串
+#! /bin/bash
+name='nick';
+echo 'Your name is'${name}' ?';
+echo "Your name is"${nane}" ?";
+echo "Your name is ${nane} ?";
+
+获取字符串长度
+string="abcd"
+echo ${#string}  #输出 4
+
+提取子字符串
+string="runoob is a great site"
+echo ${string:1:4} # 输出 unoo
+
+查找子字符串
 
 
 

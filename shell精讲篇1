@@ -58,6 +58,36 @@ echo $sty_res;
 在初学篇（大概吧），我们提到字符串长度的计算方式{#str},
 现在介绍另一种方式`expr length "$str"`;(注意:当字符串中有空格,双引号必须加,没有则不用)
 
+match的使用
+expr match $string substring命令在string字符串中匹配substring字符串，然后返回匹配到的substring字符串的长度，若找不到则返回0。
+(缺点:这个方法就是substring一定要从$string的首字母开始相同，才可以匹配。)
+sty='To be or not to be , this is a question';
+echo `expr match "${sty}" "To be or not to"`; #有空格要用双引号
+结果：15
+echo `expr match "${sty}" "not to"`;
+结果:0
+
+计算字符串长度：
+echo `expr match "${sty}" T.*`;#记住是.*
+●总结:我们有三总计算长度的方法了,#,length,match。
+
+
+对于抽取子串，在初学篇其实也有进行介绍，下面会进行更详细的介绍。
+${str:pos}  从pos的位置开始匹配（pos为整形，从0开始）
+${str:pos:len} 从pos的位置开始，匹配len长度
+${str: -pos}    从右边开始匹配（知识点:-pos和:之间必须有空格）
+${str:(pos)}   从左边开始匹配
+`expr substr $str $pos $len` 从pos的位置开始，匹配len长度
+
+
+
+
+
+
+
+
+
+
 
 
 

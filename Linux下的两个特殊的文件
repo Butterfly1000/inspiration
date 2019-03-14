@@ -1,0 +1,32 @@
+【转】https://www.cnblogs.com/lishihai/p/7986565.html
+/dev/null  ： 在类Unix系统中，/dev/null，或称空设备，是一个特殊的设备文件，它丢弃一切写入其中的数据（但报告写入操作成功），
+读取它则会立即得到一个EOF。
+在程序员行话，尤其是Unix行话中，/dev/null 被称为位桶(bit bucket)或者黑洞(black hole)。空设备通常被用于丢弃不需要的输出流，
+或作为用于输入流的空文件。当你读它的时候，它会提供无限的空字符(NULL, ASCII NUL, 0x00)。
+(上面的话很多，你可以把/dev/null当成设备垃圾桶，可以将你不想输出的内容全部丢到里面)
+
+举例:
+test.sh文件
+内容:
+#!/bin/bash
+your_name='HELLO WORLD';
+echo $your_name;
+
+cat test.sh
+输出:
+#!/bin/bash
+your_name='HELLO WORLD';
+echo $your_name;
+
+cat test.sh > /dev/null
+输出为空
+
+使用  cat $filename 1>/dev/null 也会得到同样的效果，
+默认重定向的 1 就是标准输出; 2标准错误输出。(知识点)
+
+到这边你就会明白了它的作用，如果你cat $filename是正确的，我们或许没必要做这个动作。
+但是如果这个文件不存在,cat就会报错，我们要如何避免报错信息呢？
+cat $filename 2>/dev/null  #这样就不会有报错信息了
+
+
+

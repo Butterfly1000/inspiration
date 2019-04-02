@@ -28,12 +28,35 @@ session_start();  #开启session
 【详细分析可参考】https://blog.csdn.net/alexander_phper/article/details/52670608
 
 ★session销毁
+tp采用形式:
+设置了php.ini中的两个变量“session.gc_maxlifetime”和“session.cookie_lifetime”的值。
+ini_set('session.gc_maxlifetime',$expire);
+ini_set('session.cookie_lifetime,$expire);
+session.gc_maxlifetime:session的有效生存时间，过了这个时间session将进入销毁队列。
+session.cookie_lifetime:值为0代表关闭浏览器，保存在客户端的sessionid将立即失效。
+
+session.gc_maxlifetime这个是关键，但过了这个时间并不能马上销毁，这又涉及到session.gc_probability和session.gc_divisor，
+这两个参数决定超过gc.maxlifetime的session被销毁的概率，只有session被销毁才能算过期。（下面有注释为什么。）
+
+session的垃圾回收机制
+session.gc_divisor(除数) 与 session.gc_probability(几率) 合起来定义了在每个会话初始化时启动 gc（garbage collection 垃圾回收）进程的概率。
+此概率用 gc_probability/gc_divisor 计算得来。例如 1/100 意味着在每个请求中有 1% 的概率启动 gc 进程。session.gc_divisor 默认为 100。
+
+所以单纯配置SESSION的过期时间就想让session过期是行不通的，至少这种过期是有概率成分的。
+确保的方式，session过期的本质是session文件的销毁，我们把被动销毁，改为主动销毁。自行判断时间是否过期，过期则用session_destroy()销毁。
+
+★注意
+session比较糟糕的是他没有像cookie那样默认就有域的隔离，如果你没做session.path的设置，
+那么运行在同一个服务器上的不同项目session文件是存在同一个目录的，不同项目的对maxlifetime的配置就会相互影响，
+gc的垃圾回收机制会按照后来者的配置值进行删除，前者的设置无效了。
+
 
 
 
 【参考】https://baijiahao.baidu.com/s?id=1619095369231494766&wfr=spider&for=pc
 【参考】https://www.qiusuoweb.com/81.html
 【参考】https://blog.csdn.net/nn_nan/article/details/72478263
+【参考】https://www.cnblogs.com/hongfei/archive/2012/06/17/2552434.html
 
 
 

@@ -112,3 +112,4 @@ service redisd stop
 【参考】https://www.cnblogs.com/pqchao/p/6549510.html
 
 如何让redis持久挂在服务器上(运行后），在redis.conf中将daemonize设置为yes即可。
+【参考】https://blog.csdn.net/ksdb0468473/article/details/52126009

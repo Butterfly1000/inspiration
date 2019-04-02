@@ -90,6 +90,25 @@ https://www.jb51.net/article/99775.htm
  killall php-fpm
  然后重启php-fpm。
  
- 
+ ——————————————————————————————————————————
+如何让redis开机启动
+1.根据启动脚本，将修改好的配置文件复制到指定目录下，用root用户进行操作：
+mkdir /etc/redis
+cp redis.conf /etc/redis/6379.conf
 
+2.将启动脚本复制到/etc/init.d目录下，本例将启动脚本命名为redisd（通常都以d结尾表示是后台自启动服务）。
+cp redis_init_script /etc/init.d/redisd
 
+3.在启动脚本开头添加如下注释来修改运行级别：
+#!/bin/sh
+# chkconfig:   2345 90 10          #这行代码
+
+#设置为开机自启动服务器
+chkconfig redisd on
+#打开服务
+service redisd start
+#关闭服务
+service redisd stop
+【参考】https://www.cnblogs.com/pqchao/p/6549510.html
+
+如何让redis持久挂在服务器上(运行后），在redis.conf中将daemonize设置为yes即可。

@@ -1,0 +1,45 @@
+今天就整理一下session的一些小知识，session也称为会话信息。
+★cookie与session的区别有：
+1.cookie以文本格式存储在浏览器上，存储量有限，只允许4KB；而session存储在服务端，可以无限量存储多个变量并且比cookie更安全。
+2.我们可以轻松访问cookie值但是我们无法轻松访问会话值，因此它更安全。
+3.设置cookie时间可以使cookie过期。但是使用session-destory（），我们将会销毁会话。
+总结：
+cookie：以本文格式存储在浏览器上，但有一定风险，比如信息安全方面，浏览器禁止cookie。存储量最大4KB，可设置过期时间。
+session:数据存储在服务器上，信息存储量大，信息安全性高，过期则销毁会话，但依赖于cookie值里面存储的session_id匹配服务器session，每个用户用一个
+ID去识别。所以如果浏览器禁用cookie，很可能session也获取不到。
+
+★浏览器禁止cookie如何使用session
+php的session客户端ID一般有两种保存方式：cookie和url方式。如果是cookie中保存session ID，就可以看到浏览器的cookie中有一个PHPSESID变,客户端
+禁用cookie，session便也会随之失效。
+
+客户端禁用cookie的解决方法:
+1.如果是URL传递的(建议使用隐藏表单传递)，就可以看到形如:index.php?PHPSESID=ves0d7uvdsab9k6sig73mnn592的URL。）
+2.用文件、数据库等形式保存session_id,在跨页过程中手动调用。
+【参考】https://www.cnblogs.com/qingsong/p/5932030.html
+
+★cookie中的PHPSESSID
+PHP脚本中
+session_start();  #开启session
+
+每一次SESSION会话都有一个SESSION ID，用来识别不同的会话，保存在浏览器Cookie之中，也就是这个名为PHPSESSID的Cookie（名称可以更改）;
+这个值是php自动生成的，当php.ini（Windows下PHP的配置文件）中的session.auto_start = On时，PHP会自动创建SESSION;
+改为：session.auto_start = Off，PHP就不会自动创建SESSION了。
+
+【详细分析可参考】https://blog.csdn.net/alexander_phper/article/details/52670608
+
+★session销毁
+
+
+
+【参考】https://baijiahao.baidu.com/s?id=1619095369231494766&wfr=spider&for=pc
+【参考】https://www.qiusuoweb.com/81.html
+【参考】https://blog.csdn.net/nn_nan/article/details/72478263
+
+
+
+
+
+
+
+
+

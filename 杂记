@@ -18,3 +18,14 @@ make install
 将openssl.so复制到PHP扩展文件夹中
 修改php.ini中 extesion=openssl.so
 
+3.致命错误: Call to undefined function imagettftext()
+导致因素:freetype缺少
+
+freetype下载: http://download.savannah.gnu.org/releases/freetype/
+[root@localhost src]# tar zxvf freetype-2.3.5.tar.gz 
+[root@localhost src]#./configure --prefix=/usr/local/freetype
+【转】https://blog.csdn.net/xdlguozi/article/details/52180068 
+注意在gd的时候make clean很重要。
+./configure --with-php-config=/home/work/soft/php/bin/php-config --with-freetype-dir=/usr/local/freetype --with-jpeg-dir=/usr/local/jpeg
+
+

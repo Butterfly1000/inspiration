@@ -1,0 +1,5 @@
+Unable to find the wrapper "https" - did you forget to enable it when you configured PHP?
+解决方法：
+在php.ini文件中加以下
+extension=php_openssl.dll
+

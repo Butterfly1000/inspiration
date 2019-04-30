@@ -1,0 +1,10 @@
+这个操作主要还是运用在多台服务器的联系上，每台服务器都有自己的session存储位置，多台服务器必然导致session值不同，但如果使用均衡负载的情况下，
+我们希望多台服务器上的session值保持一致，便于联系操作，这时候就可以用redis存储session值，然后多台服务器连接同一个redis。
+方法一:
+第一种:通过php.ini配置
+在session_start()之前增加如下代码:
+ini_set('session.save_handler', 'redis');
+ini_set('session.save_path', 'tcp://127.0.0.1:6379');
+
+方法二:
+

@@ -43,4 +43,47 @@ WXSS 具有 CSS 大部分的特性，小程序在 WXSS 也做了一些扩充和�
 4.js 后缀的 JS 脚本逻辑文件
 逻辑交互
 
+★写
+{{ }} 变量放置
+{{ a === 10? "变量 a 等于10": "变量 a 不等于10"}} #a为变量
+
+条件逻辑：wx:if="{{condition}}"  
+<view wx:if="{{length > 5}}"> 1 </view>
+<view wx:elif="{{length > 2}}"> 2 </view>
+<view wx:else> 3 </view>
+
+列表渲染：wx:for="{{array}}"  默认：{{index}}键名 {{item}}键值
+使用 wx:for-item 指定数组当前元素的变量名，使用 wx:for-index 指定数组当前下标的变量名：
+<view wx:for="{{array}}" wx:for-index="idx" wx:for-item="itemName">
+  {{idx}}: {{itemName.message}}
+</view>
+
+如果列表中项目的位置会动态改变或者有新的项目添加到列表中，需要使用 wx:key 来指定列表中项目的唯一的标识符。
+<switch wx:for="{{objectArray}}" wx:key="unique" > {{item.id}} </switch>
+wx:key 的值以两种形式提供：
+1.字符串，代表在 for 循环的 array 中 item 的某个 property，该 property 的值需要是列表中唯一的字符串或数字，且不能动态改变。
+2.保留关键字 this 代表在 for 循环中的 item 本身，这种表示需要 item 本身是一个唯一的字符串或者数字。
+★作用：
+当数据改变触发渲染层重新渲染的时候，会校正带有 key 的组件，框架会确保他们被重新排序，而不是重新创建，
+以确保使组件保持自身的状态，并且提高列表渲染时的效率。
+
+模板主要动态模板了解吧。
+
+★引用
+WXML 提供两种文件引用方式import和include。
+import 
+<import src="item.wxml"/>
+需要注意的是 import 有作用域的概念，即只会 import 目标文件中定义的 template，而不会 import 目标文件中 import 的 template，
+简言之就是 import 不具有递归的特性。
+
+include
+可以将目标文件中除了 <template/> <wxs/> 外的整个代码引入，相当于是拷贝到 include 位置
+
+★共同属性（id，class，style这些相似就不列出了）
+属性名         类型	        描述	         注解
+hidden	      Boolean	      组件是否显示	  所有组件默认显示
+data-*	      Any	          自定义属性	     组件上触发的事件时，会发送给事件处理函数
+bind*/catch*	EventHandler	组件的事件
+
+
 

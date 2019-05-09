@@ -85,5 +85,20 @@ hidden	      Boolean	      组件是否显示	  所有组件默认显示
 data-*	      Any	          自定义属性	     组件上触发的事件时，会发送给事件处理函数
 bind*/catch*	EventHandler	组件的事件
 
+★WXML 数据绑定
+注意点:1.变量名是大小写敏感的，也就是说 {{name}} 和 {{Name}} 是两个不同的变量。
+      2.没有被定义的变量的或者是被设置为 undefined 的变量不会被同步到 wxml 中。
+
+WXSS 样式
+尺寸单位：引入了rpx（responsive pixel）尺寸单位。引用新尺寸单位的目的是，适配不同宽度的屏幕，开发起来更简单。
+在CSS中，引用另一个样式文件：@import url('./test_0.css') 或 @import './test_0.wxss'
+选择器：
+类型	        选择器	    样例	         样例描述
+类选择器	    .class	  .intro	       选择所有拥有 class="intro" 的组件
+id选择器	     #id	     #firstname	    选择拥有 id="firstname" 的组件
+元素选择器	   element	 view checkbox	选择所有文档的 view 组件和所有的 checkbox 组件
+伪元素选择器	::after	  view::after	   在 view 组件后边插入内容
+伪元素选择器	::before	view::before   在 view 组件前边插入内容
+
 
 

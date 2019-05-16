@@ -1,0 +1,216 @@
+[转]https://www.jb51.net/article/116115.htm
+php类中接口的应用关键字是interface、implements了，接口是一种成员属性全部为抽象或常量的特殊抽象类,implements主要是对类名，
+类所拥有的方法，以及所传参数起约束和规范做用，有点像 abstract 抽象类。
+
+类中接口的应用
+1.关键字：interface
+2.关键字：implements
+
+1.接口的介绍与创建
+
+接口：一种成员属性全部为抽象或常量的特殊抽象类。
+
+规则：
+1.类中全部为抽象方法。
+2.抽象方法前不用加abstract。
+3.接口抽象方法属性为public。
+4.成员属性必须为常量。
+
+上面的听完后，基本记住抽象和常量，下面具体：
+interface demo { 
+  const NAME = "常量对象属性"; 
+  function myfun1(); //抽象方法
+  function myfun2(); //抽象方法,不用具体写入逻辑 
+}
+
+一.接口的定义和调用
+<?php
+//接口
+interface Cinema
+{
+  const film = '加勒比海盗';
+  public function show();
+}
+
+class Order implements Cinema
+{
+  public function show()
+  {
+    echo "影院 接口开放了<br>";
+  }
+}
+$face = new Order();
+echo $face->show();    
+echo Cinema::film;
+ 
+
+说明：上面的例子要注意一点，接口的方法名是show，继承接口的类中必须有show这个方法，不然就会报错。也就是说接口的方法是假的，
+真正起作用的是在继承的类中的方法，这里接口和php的抽象类是不是有点像了。（重点）
+
+二.对参数约束比较严 
+<?php
+interface Cinema
+{
+  public function show(Order $show,$num);
+}
+// 显示正常
+class Order implements Cinema
+{
+  public $number='0011排';
+  public function show(Order $show,$num)
+  {
+    echo $show->number.$num;
+  }
+}
+$face= new Order();
+$face->show(new Order,$num='3人');//输出 0011排3人
+说明：上面的这个例子继承接口类中，调用接口的方法时，所传参数要和接口中的参数名要一至。不然就会报错。(参数一致)
+
+三.接口间的继承和调用接口传递参数
+<?php
+interface Cinema
+{
+  public function show();
+}
+//继承
+interface Cinema1 extends Cinema
+{
+  public function show1(Order1 $object,$num);
+}
+
+class Order implements Cinema1
+{
+  public function show()
+  {
+    echo "准备就绪<br>";
+  }
+  public function show1(Order1 $object,$num)
+  {
+    //var_dump($object);
+    echo $object->number."$num<br>";
+  }
+}
+
+class Order1
+{
+  public $number="0012排";
+  function fun(){
+    echo ' =================';
+  }
+}
+
+$show = new Order1;
+$show->fun();  //这个不是重点     
+$test = new Order();
+$test->show(); //说明可以使用接口继承的内容     
+$test->show1($show,$num='6人'); //就是实例化另一个类
+// 输出 ===============准备就绪0012排6人
+
+说明：上面的例子可以看到，接口Cinemal1继承了接口Cinemal，类Order继承了接口Cinemal1。
+不知道你发现没有，class类Order当中包括有二个方法，一个是show，一个show1，并且一个也不能少，如果少一个，报fatal错误。【接口有的方法都必须有】
+show1(Order1 $object,$num)中的Order1必须跟继承类的名子要一样class Order1。如果不一样，也会报fatal错误。【或者你直接不写Order1】
+
+那如果一个接口被多个类继承，并且类名又不一样，怎么办呢？那就要用self了。
+四.一个接口多个继承
+<?php
+interface demo {
+  const NAME = "电影名称";
+  function fun1();
+  function fun2();
+}
+
+interface demo2 {
+  function fun3();
+  function fun4();
+}
+
+interface demo3 {
+  const TEST = "这里是测试Test";
+  function fun5();
+}
+
+//使用了两个接口
+class MyDemo implements demo, demo2 {
+  function fun1() {
+    echo "你好";
+  }
+  function fun2() {
+    echo "----------";
+  }
+  function fun3() {
+    echo "我也好<br />";
+  }
+  function fun4() {
+    echo "大家都好<br />";
+  }
+}
+
+//继承MyDemo 使用demo3接口
+class YourDemo extends MyDemo implements demo3 {
+  function fun5() {
+    echo "继承类后引用接口";
+  }
+}
+
+$p = new YourDemo;
+$p->fun1();
+$p->fun2();
+$p->fun3();
+$p->fun4();
+$p->fun5();
+
+上面的例子中我们可以看到接口都使用关键字 interface 来定义，并使用关键字 implements 来实现接口中的方法，再举个例子：
+<?php
+//定义接口
+interface User{
+  function getDiscount();
+  function getUserType();
+}
+ 
+class VipUser implements User{ //VIP用户 接口实现
+  private $discount = 0.8;  // VIP 用户折扣系数
+  function getDiscount() {
+    return $this->discount;
+  }
+  function getUserType() {
+    return "VIP用户";
+  }
+}
+
+class Goods{
+  var $price = 88;
+  var $vc;
+  function run(User $vc){   //定义 User 接口类型参数，这时并不知道是什么用户
+    $this->vc = $vc;
+    $discount = $this->vc->getDiscount();
+    $usertype = $this->vc->getUserType();
+    echo $usertype."商品价格：".$this->price*$discount;
+  }
+}
+
+$display = new Goods();
+$display ->run(new VipUser); //VIP用户商品价格：70.4
+这个例子演示了一个 PHP 接口的简单应用。
+该例子中，User 接口实现用户的折扣，而在 VipUser 类里面实现了具体的折扣系数。最后商品类 Goods 根据 User 接口来实现不同的用户报价.
+
+最后总结下：
+抽象类和接口的区别
+接口是特殊的抽象类，也可以看做是一个模型的规范。接口与抽象类大致区别如下：
+1.一个子类如果 implements 一个接口，就必须实现接口中的所有方法（不管是否需要）；如果是继承一个抽象类，只需要实现需要的方法即可。
+
+2.如果一个接口中定义的方法名改变了，那么所有实现此接口的子类需要同步更新方法名；而抽象类中如果方法名改变了，其子类对应的方法名将不受影响，
+只是变成了一个新的方法而已（相对老的方法实现）。
+
+3.抽象类只能单继承，当一个子类需要实现的功能需要继承自多个父类时，就必须使用接口。【优点】
+
+接口的特点:规范性，所有使用必须遵循接口内容规则;但同时也呆板化，即不需要使用的方法也要有;可同时使用多个接口。
+
+ 
+
+
+
+
+
+
+
+

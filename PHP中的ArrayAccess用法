@@ -1,0 +1,72 @@
+在了解了implements使用interface接口后，我们有必要了解一下ArrayAccess。
+官方解释：
+Interface to provide accessing objects as arrays. #接口，提供以数组形式访问对象
+
+ArrayAccess是php自带的interface(接口)
+ArrayAccess {
+  /* Methods */
+  abstract public offsetExists ( mixed $offset ) : bool
+  abstract public offsetGet ( mixed $offset ) : mixed
+  abstract public offsetSet ( mixed $offset , mixed $value ) : void
+  abstract public offsetUnset ( mixed $offset ) : void
+}
+
+我们可以把ArrayAccess当成一个接口（或者说它就是），里面有四个抽象方法，分别是offsetExists，offsetGet，offsetSet，offsetUnset。
+ public function offsetSet($offset, $value) {}  #设置值时触发
+ public function offsetExists($offset) {}       #是否存在isset时触发
+ public function offsetUnset($offset) {}        #销毁unset时触发
+ public function offsetGet($offset) {}          #获取值时触发
+ 
+ 示例：
+ <?php
+namespace WebIM;
+
+class Config implements \ArrayAccess
+{
+    private $config = []; //配置内容
+
+    private static $instance;  //静态变量
+
+    private $path; //私有变量 路劲
+
+    private function __construct()
+    {
+        $this->path = __DIR__."/../config/"; //路劲地址
+    }
+
+    //返回当前类实例化结果
+    public static function instance()
+    {
+		//instanceof 用于确定一个 PHP 变量是否属于某一类 class 的实例,返回true | false
+        if (!(self::$instance instanceof Config)) {
+            self::$instance = new Config();
+        }
+        return self::$instance;
+    }
+
+    public function offsetExists($offset)
+    {
+       #isset($this->config['name']) $offset='name'
+    }
+
+    public function offsetGet($offset)
+    {
+      #$this->config['name'] $offset='name' 只要用到变量就触发
+    }
+
+    public function offsetSet($offset, $value)
+    {
+      #$this->config['name']=5; $offset='name' $value=5
+    }
+
+    public function offsetUnset($offset)
+    {
+      #unset($this->config['name']) $offset='name';
+    }
+}
+
+注意:$this->config['name']['a'] 这种不触发。
+
+ 
+ 
+ 

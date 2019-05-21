@@ -1,0 +1,4 @@
+RTMP协议是Real Time Message Protocol(实时信息传输协议)的缩写，它是由Adobe公司提出的一种应用层的协议，
+用来解决多媒体数据传输流的多路复用（Multiplexing）和分包（packetizing）的问题。随着VR技术的发展，视频直播等领域逐渐活跃起来，
+RTMP作为业内广泛使用的协议也重新被相关开发者重视起来。
+

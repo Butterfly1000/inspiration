@@ -70,6 +70,7 @@ foreach($cursor as $user){
 Db::table('think_user')->where('info->email','thinkphp@qq.com')->find();
 
 添加数据解析
+add
 
 
  

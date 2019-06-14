@@ -1,0 +1,76 @@
+Tp5.1相对于tp3.2的查询数据多了一些方法。
+tp3.2用的是M方法，而Tp5.1也提供了一个db的助手函数。M('user') -> db('user');
+TP5.1 查询解析
+★值和列查询
+查询某个字段的值可以用
+Db::table('think_user')->where('id',1)->value('name');
+#这个是值的查询，而且只会获得一个值。 输出:王先生
+
+Db::table('think_user')->where('tpye',1)->column('name'); #列查询
+#输出:
+array(5) {
+  [0] => string(6) "山治"
+  [1] => string(6) "索隆"
+  [2] => string(6) "路飞"
+}
+
+db('bls_user')->where('type',2)->column('name,id,type','id'); #第二个值为key值，如果没有则选择
+#输出：
+array(5) {
+  [2] => array(3) {
+    ["id"] => int(2)
+    ["name"] => string(6) "山治"
+    ["type"] => int(2)
+  }
+  [3] => array(3) {
+    ["id"] => int(3)
+    ["name"] => string(6) "索隆"
+    ["type"] => int(2)
+  }
+  [4] => array(3) {
+    ["id"] => int(4)
+    ["name"] => string(6) "路飞"
+    ["type"] => int(2)
+  }
+}
+
+这个和tp3.2的getField效果相同，getField('id')值和getField('id',true)列;
+
+★数据分批处理（新）
+在处理大数据的时候有不错的效果。
+Db::table('think_user')->chunk(100, function($users) {
+    foreach ($users as $user) {
+        //$users就是100条数据集合数组，这边可以进行操作，日志。
+    }
+});
+同时也支持回调方法，
+Db::table('think_user')->chunk(100, 'myUserIterator');
+
+处理终止：return false;(标准)当然die和exit()也可以。
+支持where查询条件，Db::table('think_user')->where(条件)->chunk(100, 'myUserIterator');
+另外指定字段查询和排序方式，
+Db::table('think_user')->chunk(100, function($users) {
+    // 处理结果集...
+    return false;
+},'create_time', 'desc');
+这边会获取的方式相对就比较奇怪（尽量还是别指定，用id最好，否为如果指定为type【这个方便解释，1,2,3】，或许不同的type获取2个数据，type为1有1个，
+type为2有2个，type为3三个，那么出现的数组是两组，第一组type为1一个+type为2一个，第二组type为3两个【默认type已查过，就到type3了】）
+，desc(感觉是对create_time和id的双排序，create_time为主)
+
+★大批量数据处理
+游标查询功能，该查询方式利用了PHP的生成器特性，可以大幅减少大量数据查询的内存占用问题。
+$cursor = Db::table('user')->where('status', 1)->cursor();#
+#这边$cursor是个对象(dump不出具体值，只会显示为object)，只有变量foreach后的值才能用dump输出。
+foreach($cursor as $user){
+	echo $user['name'];
+}
+
+★JSON类型数据查询（mysql）
+// 查询JSON类型字段 （info字段为json类型）
+Db::table('think_user')->where('info->email','thinkphp@qq.com')->find();
+
+添加数据解析
+
+
+ 
+

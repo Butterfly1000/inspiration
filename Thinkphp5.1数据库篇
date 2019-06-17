@@ -69,9 +69,94 @@ foreach($cursor as $user){
 // 查询JSON类型字段 （info字段为json类型）
 Db::table('think_user')->where('info->email','thinkphp@qq.com')->find();
 
-添加数据解析
-add
+Tp5.1添加数据解析
+tp5用insert取代add
+$data = ['foo' => 'bar', 'bar' => 'foo'];
+db('user')->insert($data);
+或
+db('user')->data($data)->insert($data);
 
+★禁止抛出异常
+db('user')->strict(false)->insert($data);
 
- 
+★不存在的字段的值将会直接抛弃(用了mysql的replace方法)
+db('user')->insert($data,true);
+
+虽然，tp5.1提供了这两个方法，可以让一些异常不出现，但个人并不支持初级工程师使用，这样会导致一些bug被忽视。
+
+★返回新增数据的自增主键
+$userId = Db::name('user')->insertGetId($data);
+这边就要提到一个问题了，tp3.2的add新增后会自动返回新增主键，但tp5.1的insert只会返回影响行数，只有用insertGetId才会返回新增主键，且不支持data()。
+
+★添加多条数据
+$data = [
+    ['foo' => 'bar', 'bar' => 'foo'],
+    ['foo' => 'bar1', 'bar' => 'foo1'],
+    ['foo' => 'bar2', 'bar' => 'foo2']
+];
+Db::name('user')->insertAll($data);
+
+★分批写入
+$data = [
+    ['foo' => 'bar', 'bar' => 'foo'],
+    ['foo' => 'bar1', 'bar' => 'foo1'],
+    ['foo' => 'bar2', 'bar' => 'foo2']
+    ...
+];
+// 分批写入 每次最多100条数据 (分批写入，但都会写入)
+Db::name('user')->data($data)->limit(100)->insertAll();
+
+Tp5.1更新数据解析
+tp5.1用update取代了save
+Db::name('user')->where('id', 1)->update(['name' => 'thinkphp']);
+
+★自增，自减，sql更新
+Db::name('user')
+    ->where('id',1)
+    ->inc('read_time')
+    ->dec('score',3)
+    ->exp('name','UPPER(name)')
+    ->update();
+或
+V5.1.7+版本以后，支持使用raw方法进行数据更新(注意版本)
+Db::name('user')
+    ->where('id', 1)
+    ->update([
+        'name'		=>	Db::raw('UPPER(name)'),
+        'score'		=>	Db::raw('score-3'),
+        'read_time'	=>	Db::raw('read_time+1')
+    ]);
+SQL:UPDATE `think_user`  SET `read_time` = `read_time` + 1 , `score` = `score` - 3 , `name` = UPPER(name)  WHERE  `id` = 1
+
+★更新字段值
+Db::name('user')
+    ->where('id',1)
+    ->setField('name', 'thinkphp');
+    
+★可以使用setInc/setDec方法自增或自减一个字段的值（ 如不加第二个参数，默认步长为1）。   
+Db::name('user')->where('id', 1)->setInc('score');
+setInc/setDec支持延时更新，如果需要延时更新则传入第三个参数，下例中延时10秒更新。
+Db::name('user')->where('id', 1)->setInc('score', 1, 10);
+    
+tp5.1删除数据
+delete
+主键删除
+Db::table('think_user')->delete(1);
+Db::table('think_user')->delete([1,2,3]);
+
+条件删除
+Db::table('think_user')->where('id',1)->delete();
+Db::table('think_user')->where('id','<',10)->delete();
+
+无条件删除所有数据
+Db::name('user')->delete(true);
+
+TP5.1 JOIN
+Db::table('think_artist')
+->alias('a')
+->join('work w','a.id = w.artist_id')
+->join('card c','a.card_id = c.id')
+->select();
+    
+
 

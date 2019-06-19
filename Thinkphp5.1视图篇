@@ -1,0 +1,102 @@
+视图渲染
+因为新版的控制器可以无需继承任何的基础类，因此在控制器中如何使用视图取决于你怎么定义控制器。
+
+1.模板渲染
+★渲染模板最常用的是控制器类在继承系统控制器基类（\think\Controller）后调用fetch方法，调用格式。
+TP5.1 return $this->fetch(); 相当于 TP3.2 $this->display();
+
+return $this->fetch('edit');  //表示调用当前控制器下面的edit模板
+return $this->fetch('member/read'); //表示调用Member控制器下面的read模板
+return $this->fetch('admin@member/edit'); //跨模块渲染模板
+
+支持从视图根目录开始读取模板，例如：
+return $this->fetch('/menu'); //表示读取的模板是当前模块/view/menu.html
+
+★如果需要调用视图类（think\View)的其它方法，可以直接使用$this->view 对象。
+如果你的模板文件位置比较特殊或者需要自定义模板文件的位置，可以采用下面的方式处理。
+return $this->fetch('../template/public/menu.html');
+这种方式需要带模板路径和后缀指定一个完整的模板文件位置，这里的../template/public目录是相对于当前项目入口文件位置。如果是其他的后缀文件，
+也支持直接输出，例如：return $this->fetch('../template/public/menu.tpl');
+
+2.助手函数 view
+// 渲染模板输出
+return view('hello', ['name' => 'thinkphp']);
+注意：无论你是否继承think\Controller类，助手函数都可以使用，也是最方便的一种。
+
+3.渲染内容
+ // 直接渲染内容
+$content = '{$name}-{$email}';
+return $this->display($content, ['name' => 'thinkphp', 'email' => 'thinkphp@qq.com']); 
+
+视图赋值
+模板赋值
+★assign方法
+// 模板变量赋值
+$this->assign('name','ThinkPHP');
+$this->assign('email','thinkphp@qq.com');
+
+// 或者批量赋值
+$this->assign([
+    'name'  => 'ThinkPHP',
+    'email' => 'thinkphp@qq.com'
+]);
+
+★方法传入参数
+方法fetch 及 display 均可传入模板变量，例如：
+return $this->fetch('index', [
+    'name'  => 'ThinkPHP',
+    'email' => 'thinkphp@qq.com'
+]);
+
+$content = '{$name}-{$email}';
+return $this->display($content, [
+    'name'  => 'ThinkPHP',
+    'email' => 'thinkphp@qq.com'
+]);
+
+★助手函数
+return view('index', [
+    'name'  => 'ThinkPHP',
+    'email' => 'thinkphp@qq.com'
+]);
+
+或者
+
+return view('index')->assign([
+    'name'  => 'ThinkPHP',
+    'email' => 'thinkphp@qq.com'
+]);
+
+★公共模板变量赋值
+如果需要在控制器之外进行模板变量赋值，可以使用视图类的share静态方法进行全局公共模板变量赋值，例如：
+
+use think\facade\View;
+// 赋值全局模板变量
+View::share('name','value');
+// 或者批量赋值
+View::share(['name1'=>'value','name2'=>'value2']);
+
+全局静态模板变量最终会和前面使用方法赋值的模板变量合并。
+
+视图过滤
+可以对视图的渲染输出进行过滤
+// 使用视图输出过滤
+return $this->filter(function($content){
+  return str_replace("\r\n",'<br/>',$content);
+})->fetch();
+
+或
+
+$this->view->filter(function($content){
+  return str_replace("\r\n",'<br/>',$content);
+});
+
+// 使用视图输出过滤
+return $this->fetch();
+
+助手函数
+// 使用视图输出过滤
+return view()->filter(function($content){
+  return str_replace("\r\n",'<br/>',$content);
+});
+

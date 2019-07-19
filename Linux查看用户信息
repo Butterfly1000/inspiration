@@ -1,0 +1,8 @@
+1.用户名和密码的存储位置
+/etc/passwd
+/etc/shadow
+
+2.修改密码
+root用户：passwd
+其他用户（例如：dbq）：passwd dbq (root用户权限，可以直接改，不用旧密码)
+

@@ -1,0 +1,91 @@
+匿名函数，也叫闭包函数(closures) ，允许临时创建一个没有制定名称的函数。最常用作回调函数(callback)参数的值。
+
+匿名函数实例：
+<?php
+    /**
+    * preg_replace_callback 执行一个正则表达式所搜并且使用一个回调进行替换。
+    * strtoupper 将字符串转化为大写
+    */
+    echo preg_replace_callback('~-([a-z])~', function ($match){
+        //$match[1] = 'w'
+        return strtoupper($match[1]);
+    },'hello-world');
+
+//输出 helloWorld
+
+
+闭包函数也可以作为变量的值来使用。PHP将会自动把此种表达式转换成内置类 Closure 的对象实例。
+把一个 Closure 对象赋值给一个变量的方式与普通变量赋值的语法一样，最后也要加上分号。
+<?php
+
+    $printString = function($arg){
+        echo $arg;
+    };
+
+    $printString('hello world');
+    //输出 hello world
+    
+闭包函数继承父作用域中的变量。任何此类变量都应该用 use 语言结构传递进去。
+
+从父作用域继承变量：（失败案例）    
+<?php
+    //定义变量
+    $message = 'hello world';
+    //匿名函数变量赋值
+    $example = function(){
+        var_dump($message);
+    };
+    //执行后输出 Notice: Undefined variable
+    $example();
+
+失败原因：在未使用关键字use 时，PHP不能在匿名函数中调用所在代码上下文变量。【划重点】
+
+<?php
+    //定义变量
+    $message = 'hello';
+    //匿名函数继承父作用域的变量（$message）
+    $example = function() use ($message){
+        var_dump($message);
+    };
+    //输出 string 'hello' (length=5)
+    echo $example();
+    //同样输出 string 'hello' (length=5)
+    $message = 'world';
+    echo $example();
+
+使用关键字use时，PHP可以在调用匿名函数中调用所在代码上下文的变量，但为什么第二次调用没有发生变化哪？ 
+是因为匿名函数可以保存所在代码块上下文的一些变量和值（即：闭包函数将会保存第一次继承的父作用域的变量和值），
+值传递只是传递继承父作用域中变量和值的一个副本。
+【重点：没有&，会保存第一次继承，也没有所谓的调用上下文的变量（没有用&情况下），只能调用定义匿名函数之前定义的变量。】
+
+要想改变父作用域的值并体现在匿名函数调用中，该怎么办哪？ 
+我们要用引用传递(即：在变量前面添加&)，如下所示：
+
+<?php
+    //定义变量
+    $message = 'hello';
+    //匿名函数继承父作用域的变量（$message）
+    $example = function() use (&$message){
+        var_dump($message);
+    };
+    //输出 string 'hello' (length=5)
+    echo $example();
+    //输出 string 'world' (length=5)
+    $message = 'world';
+    echo $example();
+
+用引用传递(即：在变量前面添加&)实际上是操作的同一内存，而不是一个副本。
+
+同样闭包函数也可以接受常规参数的传递，如下所示：
+<?php
+    //定义变量
+    $message = 'hello';
+    //匿名函数继承父作用域的变量（$message）
+    $example = function($arg) use ($message){
+        var_dump($message . ' ' . $arg);
+    };
+    //输出 string 'hello world' (length=11)
+    echo $example('world');
+
+
+[转]https://blog.csdn.net/dgh_84/article/details/54748367

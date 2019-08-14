@@ -87,5 +87,31 @@
     //输出 string 'hello world' (length=11)
     echo $example('world');
 
+call_user_func_array
+普通使用：
+function a($b, $c) {echo $b; echo $c;}  
+call_user_func_array('a', array("111", "222"));  第一个参数：回调方法名 第二个参数，以数组形式填充方法参数
 
-[转]https://blog.csdn.net/dgh_84/article/details/54748367
+调用内部方法：
+Class ClassA { 
+ function bc($b, $c) { 
+     $bc = $b + $c; 
+     echo $bc; 
+ } 
+} 
+
+call_user_func_array(array('ClassA','bc'), array("111", "222"));  第一个参数数组：(回调)类名+方法名  第二个参数，以数组形式填充方法参数
+//输出  333 
+
+支持引用传递（重点&）:
+function a(&$b) { $b++; } 
+$c = 1; 
+call_user_func_array('a', array(&$c)); 
+echo $c;  //输出 2 
+
+注意：call_user_func_array 与 call_user_func 这两个函数基本上是类似的，只是在调用上传递参数时存在一些差异。
+     函数call_user_func_array 传递的第二个参数必须是数组；
+     函数call_user_func 传递的第二个参数可能是数组，如果是多个参数的话，还是需要以列表的形式列出。
+     call_user_func ( callback $function [,mixed $parameter [, mixed $...]] )   
+【转】https://blog.csdn.net/dgh_84/article/details/54748367
+【转】https://blog.csdn.net/weihuiblog/article/details/78998924

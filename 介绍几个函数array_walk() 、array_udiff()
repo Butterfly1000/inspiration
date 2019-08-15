@@ -1,4 +1,4 @@
-array_walk() 函数
+★array_walk() 函数
 array_walk() 函数对数组中的每个元素应用用户自定义函数。在函数中，数组的键名和键值是参数。
 <?php
 function myfunction($value,$key)
@@ -10,7 +10,7 @@ array_walk($a,"myfunction");
 ?>
 
 
-PHP array_udiff() 函数
+★array_udiff() 函数 （这个函数基本要配myfunction方法，会一第一数组为基础，返回第一数组中和其他比较数组都不相同的键值。）
 array_udiff() 函数用于比较两个（或更多个）数组的键值 ，并返回差集。
 <?php
 function myfunction($a,$b)
@@ -28,3 +28,5 @@ $a2=array("a"=>"blue","b"=>"black","e"=>"blue");
 $result=array_udiff($a1,$a2,"myfunction");
 print_r($result);
 ?>
+
+输出：array("a"=>"red","b"=>"green"）; //red和green在$a2中没有出现过

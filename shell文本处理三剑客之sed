@@ -39,6 +39,12 @@ sed -n -e '/root/p' -e '/root/=' yum.log
 
 写：
 用world 替换yum.log文件中的root【真实写入】
+sed -i 's/root/world/g' yum.log
+sed -i 's#hhh#HHHH#g' h.txt    
+
+s==search  查找并替换
+g==global  全部替换
+-i: implace
 
 
 【参考/转】：https://www.cnblogs.com/ftl1012/p/sed.html

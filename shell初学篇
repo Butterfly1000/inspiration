@@ -84,12 +84,12 @@ echo ${#string}  #输出 4
 
 提取子字符串
 string="runoob is a great site"
-echo ${string:1:4} # 输出 unoo
+echo ${string:1:4}  #输出 unoo ;第1个字符串起（0为起始位），取4位
 
 查找子字符串
 查找字符 i 或 o 的位置(哪个字母先出现就计算哪个)：
 string="runoob is a great site"
-echo `expr index "$string" io`  # 输出 4
+echo `expr index "$string" io`  # 输出 4 ;expr表达式 index索引，这个输出值起始位为1
 
 ★Shell 数组
 bash支持一维数组（不支持多维数组），并且没有限定数组的大小。

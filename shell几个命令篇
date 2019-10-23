@@ -44,6 +44,18 @@ if test $[num1] -eq $[num2]
 if test $num1 = $num2
 if test -e ./bash
 
+示例：test.sh
+#!/bin/bash
+num1=1;
+num2=2;
+if test $[num1] -eq $[num2]
+then
+    echo '相等';
+else
+    echo '不相等';
+fi
+执行：./test.sh
+
 ★代码中的 [] 执行基本的算数运算，如：
 result=$[1+2] # 注意等号两边不能有空格
 result值为3

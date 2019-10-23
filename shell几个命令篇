@@ -4,10 +4,10 @@ echo 'This is a room';
 
 下面介绍一些较特殊的，
 显示换行
-echo -e "OK! \n" # -e 开启转义
+echo -e "OK! \n"           （注解：-e 开启转义）
 
 显示不换行
-echo -e "OK! \c" # -e 开启转义 \c 不换行
+echo -e "OK! \c"           （注解：-e 开启转义 \c 不换行）
 
 显示结果定向至文件
 echo "It is a test" > myfile

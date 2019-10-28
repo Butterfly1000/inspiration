@@ -15,10 +15,10 @@ cd git-2.9.5
 make prefix=/usr/local/git all
 // 安装
 make prefix=/usr/local/git install
-// 写入到环境变量中（方法一）
+// 写入到环境变量中（方法一：长久）
 echo "export PATH=$PATH:/usr/local/git/bin" >> /etc/profile && source /etc/profile
-// 写入到环境变量中(方法二)
-export PATH=$PATH:/usr/local/bin/git
+// 写入到环境变量中(方法二:临时，当前shell)
+export PATH=$PATH:/usr/local/git/bin
 // 查看是否已经安装成功
 git --version
 

@@ -1,0 +1,27 @@
+1、第一步卸载原有的git
+yum remove git
+
+2、安装相关依赖
+yum install curl-devel expat-devel gettext-devel openssl-devel zlib-devel asciidoc
+yum install  gcc perl-ExtUtils-MakeMaker
+
+3、将压缩包解压到/usr/local/src目录
+官网下载地址：https://mirrors.edge.kernel.org/pub/software/scm/git/
+wget https://mirrors.edge.kernel.org/pub/software/scm/git/git-2.9.5.tar.gz
+tar -C /usr/local/src -vxf git-2.9.5.tar.gz
+cd git-2.9.5
+
+// 编译
+make prefix=/usr/local/git all
+// 安装
+make prefix=/usr/local/git install
+// 写入到环境变量中（方法一）
+echo "export PATH=$PATH:/usr/local/git/bin" >> /etc/profile && source /etc/profile
+// 写入到环境变量中(方法二)
+export PATH=$PATH:/usr/local/bin/git
+// 查看是否已经安装成功
+git --version
+
+
+原文链接：https://www.imooc.com/article/275738
+原文链接：https://blog.csdn.net/qq_27681741/article/details/86660581

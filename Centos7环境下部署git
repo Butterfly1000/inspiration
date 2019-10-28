@@ -66,4 +66,14 @@ Enter same passphrase again:
 
 3）添加成功后，点击+号新增一个仓库：new repository
 
+4）我们按照上面的方式提交远程仓库：
+git remote add origin https://github.com/Butterfly1000/gitspace.git
+git push -u origin master
+需要输入github的用户和密码
+
+5）刷新工程查看，readme已经上传到github.
+
+参考文章：
 https://www.cnblogs.com/daniaofighter/p/9452661.html
+https://blog.csdn.net/jiangbenchu/article/details/82738254
+https://blog.csdn.net/qq_36178641/article/details/79892837

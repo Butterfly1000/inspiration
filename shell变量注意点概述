@@ -76,7 +76,14 @@ find /root -name hello.sh &
 对特定用户生效的环境变量（永久）  ~/.bashrc 或 ~/.bash_profile
 临时有效的环境变量              脚本或命令行使用export
 
-常用环境
+常用环境变量
+环境变量     含义
+PATH        命令搜索的路劲
+HOME        用户家目录的路劲
+LOGNAME     用户登录名
+PWD         当前所在路劲
+HISTFILE    历史命令的保存文件
+HISTSZIE    历史命令保存的最大行数
 ----------------------------
 
 

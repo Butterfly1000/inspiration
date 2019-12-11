@@ -27,10 +27,18 @@ svnserve.conf SVN服务配置文件
 在末尾添加如下代码：
 [group]
 test = user1,user2 //创建test用户组，并添加user1 user2用户
+php = user3,user4
+
 //指定根目录先的权限（这边可以指定用户组，也可以直接指定用户权限）
 [/]
 @test=rw
-w=r
+user3=r
+
+#某一个项目
+[act:/]
+@test=rw
+@php=rw
+
 
 8.passwd配置用户名密码
 [users]

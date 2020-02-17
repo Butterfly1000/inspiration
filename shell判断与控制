@@ -1,0 +1,57 @@
+★if判断
+
+◆if-then语句
+if  command命令 | condition条件
+then
+    commands
+fi
+
+#########
+#例子：如果pwd命令能正确执行，就回复'正确',当然pwd命令也会执行。
+if pwd
+then
+  echo '正确'
+fi
+
+#这个时候pwd命令的结果也会输出，如果去掉pwd的结果，只输出正确呢？如下
+if pwd &> /dev/null
+then
+  echo '正确'
+fi
+#将pwd结果丢进垃圾桶
+##########
+
+
+◆if-then-else语句
+if  command命令 | condition条件
+then
+    commands
+else
+    commands
+fi
+
+◆嵌套if
+if  command命令 | condition条件
+then
+    commands
+elif  command命令 | condition条件
+then
+    commands   
+else
+    commands
+fi
+
+注意：如果写在一行，需要分号；隔开,例如：if command;then ...
+
+◆条件测试-数值比较
+-eq 等于
+-ne 不等于
+-gt 大于
+-ge 大于等于
+-lt 小于
+-le 小于等于
+结果：正确true，错误false
+例：n1 -eq n2
+
+
+

@@ -1,1 +1,18 @@
+管道在shell十分常用，也非常重要。
+
+★管道其实就是 | ，作用：将一个命令的输出作为另一个命令的输入。也可以理解为重定向的简易实现。
+
+实例讲解：
+ps -ef | grep mysqld | grep -v grep
+
+既然管道为|，那么就将它所间隔开的命令逐一解释。
+
+ps -ef  #查找所有运行的进程
+grep mysqld #查找进程名含mysqld字符的进程
+grep -v grep #查找时忽略含grep的进程
+
+管道有时候也像过滤器，
+ps -ef | grep mysqld | grep -v grep
+
+查找出所有运行进程 -> 从运行进程中找到进程名含mysqld的进程 -> 过滤掉其中进程名含grep的进程
 

@@ -1,0 +1,4 @@
+1. 首先就是创建文件夹(mkdir)然后创建文件(touch a.c)
+2. vim a.c 编辑c语言内容（#include <stdio.h>）
+3. cc a.c  -o a.out  (a文件会自动生成.out文件，其他的要用-o)
+4. 运行./a.out

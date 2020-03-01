@@ -1,0 +1,14 @@
+sed (Stream Editor)，流编辑器。对标准输出或文件逐行进行处理。
+
+语法格式：
+第一种形式 ： stdout | sed [option] "pattern command"
+
+第二种形式 ： sed [option] "pattern command" file
+
+sed 的选项
+-n  只打印模式匹配行
+-e  直接在命令行进行sed编辑，默认选项
+-f  编辑动作保存在文件中，指定文件执行
+-r  支持扩展正则表达式
+-l  直接修改文件内容
+

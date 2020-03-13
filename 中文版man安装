@@ -1,0 +1,38 @@
+man就是在线帮助文件，通过man你可以看到很多命令和函数的用法。应该说是很棒的工具，但是man是英文形式的，这就会让很多对英文不适用的
+使用者感到困惑。如果能将解释以中文形式展现，想必会非常棒。
+
+安装中文版man
+1.下载源码
+
+源码网址 https://src.fedoraproject.org/repo/pkgs/man-pages-zh-CN/
+
+下载源码 wget https://src.fedoraproject.org/repo/pkgs/man-pages-zh-CN/v1.5.2.tar.gz/1bbdc4f32272df0b95146518b27bf4be/v1.5.2.tar.gz
+
+[root@localhost opt]# wget  https://src.fedoraproject.org/repo/pkgs/man-pages-zh-CN/manpages-zh-1.5.2.tar.gz/13275fd039de8788b15151c896150bc4/manpages-zh-1.5.2.tar.gz
+
+2.解压并安装
+[root@localhost opt]# mv v1.5.2.tar.gz manpages-zh-1.5.2.tar.gz
+
+[root@localhost opt]# tar xf manpages-zh-1.5.2.tar.gz
+
+[root@localhost opt]# cd manpages-zh-1.5.2/
+
+[root@localhost  manpages-zh-1.5.1]#autoreconf --install （生成configure文件，如果autoconf没安装请自行安装）
+
+[root@localhost manpages-zh-1.5.1]# ./configure --disable-zhtw  --prefix=/usr/local/zhman
+
+[root@localhost manpages-zh-1.5.1]# make && make install
+
+3. 为了不抵消man，我们新建cman命令作为中文查询
+
+[root@localhost man1]# cd ~
+
+[root@localhost ~]# echo "alias cman='man -M /usr/local/zhman/share/man/zh_CN' " >>.bash_profile
+[root@localhost ~]# source .bash_profile
+
+4.使用中文man查询命令
+
+[root@localhost ~]# cman ls
+
+【转载】https://www.cnblogs.com/fyc119/p/7116295.html
+【转载】https://blog.csdn.net/qq_29695701/article/details/95057582

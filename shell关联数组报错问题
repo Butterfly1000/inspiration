@@ -1,0 +1,19 @@
+报错信息:bash: arr: cannot convert indexed to associative array
+
+首先，看一下bash版本，据说bash4开始支持关联数组，命令：bash -version 。
+
+版本没问题的话，先输出变量看有没有值，有无关值的话，直接unset，然后再试验就成功了。重要值的话，就换个变量名。
+
+$opt=( [a]="b" [b]="a" [c]="king" )
+
+echo ${opt[*]}
+
+发现只能输出king。
+
+正确解决：
+unset opt
+declare -A opt=( [a]="k" [b]="c" [c]="king" )
+
+注意：关联数组必须声明。注意大写的A
+
+

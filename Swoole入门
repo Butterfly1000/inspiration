@@ -1,0 +1,121 @@
+★TCP
+<?php
+//创建
+$serv = new Swoole\Server("127.0.0.1",9503);  //实例化
+
+//监听连接进入事件
+$serv->on('Connect',function($serv,$fd){  //$fd客户端连接唯一标识符 
+        echo "Client:Connect.\n";
+});
+
+//监听数据接收事件
+$serv->on('Receive',function($serv,$fd,$from_id,$data){ //$from_id  $data数据
+        $serv->send($fd,"Server:".$data);
+});
+
+//监听连接关闭事件
+$serv->on('Close',function($serv,$fd){
+    echo "Client:Close.\n";
+});
+
+//启动服务器
+$serv->start();
+
+可以用telnet测试。
+
+★HTTP
+<?php
+$http = new Swoole\Http\Server("0.0.0.0",9503);
+
+//0.0.0.0 表示监听所有 IP 地址，一台服务器可能同时有多个 IP，如 127.0.0.1 本地回环 
+//IP、192.168.1.100 局域网 IP、210.127.20.2 外网 IP，这里也可以单独指定监听一个 IP
+
+$http->on('request',function($request,$response){
+      if($request->server['path_info'] == '/favicon.ico' || $request->server['request_uri'] == '/favicon.ico'){
+          
+         var_dump($request->server['path_info'],$request->server['request_uri']);
+          
+         $response->end("<p>ok</p>"); 
+         return;
+      }       
+             
+      //var_dump($request->get,$request->post);
+      $response->header("Content-Type", "test/html; charset=utf-8");
+      $response->end("<h1>Hello Swoole. #".rand(1000,9999)."</h1>");
+}); 
+    
+$http->start();
+
+★WebSocket 服务器
+<?php
+
+//创建
+$ws = new Swoole\WebSocket\Server("0.0.0.0",9502);
+
+//监听WebSocket连接打开事件
+$ws->on('open',function($ws,$request){
+    var_dump($request->fd,$request->get,$request->server);
+    $ws->push($request->fd,"hello,welcom\n");
+});
+
+//监听WebSocket消息事件
+$ws->on('message',function($ws,$frame){
+      echo "Message:{$frame->data}\n";
+      $ws->push($frame->fd,"server:{$frame->data}");
+});
+
+//监听WebSocket连接关闭事件
+$ws->on('close',function($ws,$fd){
+    echo "client-{$fd} is closed\n";
+});
+
+$ws->start();
+
+
+可以使用 Chrome 浏览器进行测试，JS 代码为：
+
+var wsServer = 'ws://127.0.0.1:9502';
+var websocket = new WebSocket(wsServer);
+websocket.onopen = function (evt) {
+    console.log("Connected to WebSocket server.");
+};
+
+websocket.onclose = function (evt) {
+    console.log("Disconnected");
+};
+
+websocket.onmessage = function (evt) {
+    console.log('Retrieved data from server: ' + evt.data);
+};
+
+websocket.onerror = function (evt, e) {
+    console.log('Error occured: ' + evt.data);
+};
+
+★执行异步任务 (task)  task在异步进程执行  finish将执行结果返回之前的进程
+$serv = new Swoole\Server("127.0.0.1", 9501);
+
+//设置异步任务的工作进程数量
+$serv->set(array('task_worker_num' => 4));
+
+//此回调函数在worker进程中执行
+$serv->on('receive', function($serv, $fd, $from_id, $data) {
+    //投递异步任务
+    $task_id = $serv->task($data);
+    echo "Dispatch AsyncTask: id=$task_id\n";
+});
+
+//处理异步任务(此回调函数在task进程中执行)
+$serv->on('task', function ($serv, $task_id, $from_id, $data) {
+    echo "New AsyncTask[id=$task_id]".PHP_EOL;
+    //返回任务执行的结果
+    $serv->finish("$data -> OK");
+});
+
+//处理异步任务的结果(此回调函数在worker进程中执行)
+$serv->on('finish', function ($serv, $task_id, $data) {
+    echo "AsyncTask[$task_id] Finish: $data".PHP_EOL;
+});
+
+$serv->start();
+

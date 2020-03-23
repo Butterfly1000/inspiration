@@ -1,0 +1,25 @@
+1、在新机上，创建目标库
+#svnadmin   create    /var/svn/test
+
+2、修改新建仓库中hooks 下的 名为 pre-revprop-change 的文件：
+cp pre-revprop-change.tmpl pre-revprop-change
+
+chmod 755  pre-revprop-change  (  给pre-revprop-change文件 赋执行权限 ）
+
+修改  pre-revprop-change 脚本最后一行为 　
+#svn up /www/testB/ --username=sync --password=123456
+exit ０     # exit 0正常退出
+（注释代码为同步过来能自动更新到站点中，如果没有站点可去掉）
+
+3、svnsync  init  file:///var/svn/test svn://xx.xx.xx.xx （ 初始化 ） --source-username sync_source --source-password 123456 --sync-username sync --sync-password 123456 --no-auth-cache
+svnsync  init   file:// 新机器仓库目录路径（完整路径）   源服务器的IP（可以通过 http 协议，还可以通过svn协议）  
+
+4、svnsync sync file:///var/svn/test  ( 同步 )
+             
+5、等待同步完成，启动SVN服务器即可。至此，SVN服务就已经迁移完了。
+
+注：post-commit和authz及passwd要自行处理。
+
+注：如果发现更新版本时，(钩子)某个文件提交因为版本差异保存，可以尝试删除文件后，svn up重新更新。
+参考链接：https://blog.csdn.net/liangcl_2018/article/details/79745688
+参考链接：https://blog.51cto.com/php2012web/1852311

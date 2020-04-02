@@ -1,1 +1,39 @@
 Redis (error) NOAUTH Authentication required.解决方法
+
+当我们连接redis后，在进行get操作时，报错Redis (error) NOAUTH Authentication required。
+
+这是什么问题呢？很简单，你设置了密码，确没有验证。
+redis 127.0.0.1:6379> AUTH PASSWORD 
+验证过后，再执行get就不会有问题了。
+
+那么有没有更直接的方式呢？
+[root@localhost bin]# ./redis-cli -h 127.0.0.1 -p 6379 -a PASSWORD
+就是在连接的时候直接输入密码,
+-h 主机名
+-p 端口
+-a 密码
+
+如果在连接的时候没有使用-a输入密码，就用AUTH验证。
+------------------------------------------------------------
+那么下面是一些关于redis的知识普及
+
+redis安装后，在src和/usr/local/bin下有几个以redis开头的可执行文件，称为redis shell，这些可执行文件可做很多事情。
+
+可执行文件	         作用
+redis-server 	     启动redis
+redis-cli	         redis命令行工具
+redis-benchmark	   基准测试工具
+redis-check-aof	   AOF持久化文件检测工具和修复工具
+redis-check-dump	 RDB持久化文件检测工具和修复工具
+redis-sentinel	   启动redis-sentinel
+
+这里只介绍redis-cli
+第一种：交互式方式     
+redis-cli -h {host} -p {port}方式连接，然后所有的操作都是在交互的方式实现，不需要再执行redis-cli了。
+
+第二种方式：命令方式
+redis-cli -h {host} -p {port} {command}直接得到命令的返回结果。
+
+至于其他内容学习（以下也有参考）：
+https://www.cnblogs.com/kongzhongqijing/p/6867960.html（都可阅读）
+https://www.runoob.com/redis/redis-backup.html（重点高级教程）

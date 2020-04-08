@@ -39,4 +39,26 @@ if ( $class instanceof Closure ) {
 
 }
 
+★判断一个对象是否实现了某个接口
+<?php
+interface ExampleInterface
+{
+   public function interfaceMethod();
+ }
+ class ExampleClass implements ExampleInterface
+{
+   public function interfaceMethod()
+   {
+     return 'Hello World!';
+   }
+ }
+$exampleInstance = new ExampleClass();
+ if($exampleInstance instanceof ExampleInterface){
+   echo 'Yes, it is';
+ }else{
+   echo 'No, it is not';
+} 
+?>
 【参考：https://www.cnblogs.com/fps2tao/p/8024111.html】
+【参考：https://www.cnblogs.com/tengjian/p/7999107.html】
+【参考：https://www.jb51.net/article/74409.htm】

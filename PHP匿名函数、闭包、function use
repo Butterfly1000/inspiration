@@ -1,6 +1,6 @@
 匿名函数，也叫闭包函数(closures) ，允许临时创建一个没有制定名称的函数。最常用作回调函数(callback)参数的值。
 
-匿名函数实例：
+★匿名函数实例：
 <?php
     /**
     * preg_replace_callback 执行一个正则表达式所搜并且使用一个回调进行替换。
@@ -13,8 +13,25 @@
 
 //输出 helloWorld
 
+解析:
+mixed preg_replace_callback ( mixed $pattern , callable $callback , mixed $subject [, int $limit = -1 [, int &$count ]] )
 
-闭包函数也可以作为变量的值来使用。PHP将会自动把此种表达式转换成内置类 Closure 的对象实例。
+$pattern: 要搜索的模式，可以使字符串或一个字符串数组。
+
+$callback: 一个回调函数，在每次需要替换时调用，调用时函数得到的参数是从subject 中匹配到的结果。
+
+$subject: 要搜索替换的目标字符串或字符串数组。
+
+$limit: 可选，对于每个模式用于每个 subject 字符串的最大可替换次数。 默认是-1（无限制）。
+
+$count: 可选，为替换执行的次数。
+
+$pattern为正则搜索模式 => '~-([a-z])~'，$subject要搜索替换的目标字符串或字符串数组 => hello-world,结果 [0=> "-w" ,1=> "w"]，
+将结果数组作为参数 => $match,执行匿名函数。注意，如果正则没有搜索到内容，则不进入匿名函数，直接输出原值。
+
+去掉回调函数的处理部分，直接替换就是preg_replace(正则搜索模式,替换值,目标值)。
+
+★闭包函数也可以作为变量的值来使用。PHP将会自动把此种表达式转换成内置类 Closure 的对象实例。
 把一个 Closure 对象赋值给一个变量的方式与普通变量赋值的语法一样，最后也要加上分号。
 <?php
 
@@ -25,7 +42,9 @@
     $printString('hello world');
     //输出 hello world
     
-闭包函数继承父作用域中的变量。任何此类变量都应该用 use 语言结构传递进去。
+★闭包函数可以继承父作用域中的变量（即方法外的变量）。任何此类变量都可以用 use 语言结构传递进去。当然，用function($pat)里面的$pat
+传递也是可以的。但是，当然有不同咯，$pat是匿名函数形成后的参数，use则是借用外部变量构造匿名函数。
+
 
 从父作用域继承变量：（失败案例）    
 <?php
@@ -45,52 +64,55 @@
     $message = 'hello';
     //匿名函数继承父作用域的变量（$message）
     $example = function() use ($message){
-        var_dump($message);
+        return $message;
     };
-    //输出 string 'hello' (length=5)
-    echo $example();
-    //同样输出 string 'hello' (length=5)
-    $message = 'world';
-    echo $example();
+    echo $example();  //输出 string 'hello' (length=5)
+    $message = 'world';  //没有作用哦！！
+    echo $example();  //同样输出 string 'hello' (length=5)
 
 使用关键字use时，PHP可以在调用匿名函数中调用所在代码上下文的变量，但为什么第二次调用没有发生变化哪？ 
-是因为匿名函数可以保存所在代码块上下文的一些变量和值（即：闭包函数将会保存第一次继承的父作用域的变量和值），
+是因为匿名函数【可以保存】所在代码块上下文的一些变量和值（即：闭包函数将会【保存第一次】继承的父作用域的变量和值），
 值传递只是传递继承父作用域中变量和值的一个副本。
 【重点：没有&，会保存第一次继承，也没有所谓的调用上下文的变量（没有用&情况下），只能调用定义匿名函数之前定义的变量。】
 
-要想改变父作用域的值并体现在匿名函数调用中，该怎么办哪？ 
+★要想改变父作用域的值并体现在匿名函数调用中，该怎么办哪？ 【&】
 我们要用引用传递(即：在变量前面添加&)，如下所示：
 
 <?php
     //定义变量
     $message = 'hello';
+    
     //匿名函数继承父作用域的变量（$message）
     $example = function() use (&$message){
-        var_dump($message);
+        return $message;
     };
-    //输出 string 'hello' (length=5)
-    echo $example();
-    //输出 string 'world' (length=5)
+    echo $example(); //输出 string 'hello' (length=5)
+    
     $message = 'world';
-    echo $example();
+    echo $example();  //输出 string 'world' (length=5)
 
 用引用传递(即：在变量前面添加&)实际上是操作的同一内存，而不是一个副本。
 
-同样闭包函数也可以接受常规参数的传递，如下所示：
+★同样闭包函数也可以接受常规参数的传递，如下所示：
 <?php
     //定义变量
     $message = 'hello';
     //匿名函数继承父作用域的变量（$message）
     $example = function($arg) use ($message){
-        var_dump($message . ' ' . $arg);
+        return $message . ' ' . $arg;
     };
-    //输出 string 'hello world' (length=11)
-    echo $example('world');
+    
+    echo $example('world'); //输出 string 'hello world' (length=11)
 
-call_user_func_array
+★call_user_func_array
 普通使用：
 function a($b, $c) {echo $b; echo $c;}  
 call_user_func_array('a', array("111", "222"));  第一个参数：回调方法名 第二个参数，以数组形式填充方法参数
+或
+call_user_func_array(function($a,$b){
+    echo $a;
+    echo $b;
+}, array("111", "222"));
 
 调用内部方法：
 Class ClassA { 

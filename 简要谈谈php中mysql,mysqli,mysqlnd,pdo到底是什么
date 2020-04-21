@@ -1,0 +1,100 @@
+名词解释:
+★最开始的初学者，往往搞不清mysqli,mysqlnd,pdo到底是什么，下面先直接贴出最直观的名字吧。
+
+MYSQL:This extension is deprecated as of PHP 5.5.0, and has been removed as of PHP 7.0.0.
+MYSQLI: MySQL Improved Extension
+MySQLND: MySQL Native Drive
+PDO:The PHP Data Objects。extension defines a lightweight, consistent interface for accessing databases in PHP。
+
+以上摘自 PHP官方手册: http://php.net/manual/en/book.mysqli.php
+
+用中文说:
+MYSQL 也叫 Original MySQL，PHP4版本的MYSQL扩展，从PHP5起已经被废弃，并别从PHP7开始已经被移除。
+
+MYSQLI 叫做 “MySQL增强扩展”。
+
+MYSQLND MYSQL NATIVE DIRVER 叫做MYSQL “官方驱动”或者更加直接点的叫做“原生驱动”
+
+PDO PHP Data Objects PHP数据对象，是PHP应用中的一个数据库抽象层规范。
+
+★针对本篇文章 再补充几个名词解释：
+1 什么是API？
+一个应用程序接口（Application Programming Interface的缩写），定义了类，方法，函数，变量等等一切。你的应用程序中为了完成特定任务而需要调用的内容。
+在PHP应用程序需要和数据库进行交互的时候所需要的API 通常是通过PHP扩展暴露出来（给终端PHP程序员调用）。
+
+上文所说的MYSQL 和MYSQLI扩展就提供了这样的API。
+
+2什么是驱动？
+驱动是一段设计用来于一种特定类型的数据库服务器进行交互的软件代码。驱动可能会调用一些库，比如MySQL客户端库或者MySQL Native驱动库。 这些库实现了
+用于和MySQL数据库服务器进行交互的底层协议。
+
+★在PHP拓展的角度上看，MYSQL和MYSQLi还是比较上层的拓展，依赖更底层的库去连接和访问数据库。
+上文所说的MYSQLND 就是所说的底层的数据库驱动。当然，还有一个驱动叫做libmysqlclient。至于如何选择使用这两种驱动的哪一种，
+请看这里"选择哪一种底层数据库驱动"(https://www.php.net/manual/en/mysqlinfo.library.choosing.php)。
+
+总的来说:
+从应用的层面上看，我们通过PHP的MYSQL或者MYSQLi扩展提供的API去操作数据库。
+
+从底层来看，MYSQLND提供了底层和数据库交互的支持(可以简单理解为和MySQL server进行网络协议交互)。
+
+而PDO，则提供了一个统一的API接口，使得你的PHP应用不去关心具体要连接的数据库服务器系统类型。也就是说，如果你使用PDO的API，可以在任何需要的时候无缝
+切换数据库服务器。比如MYSQL,SQLITE任何数据库都行。
+
+即从大部分功能上看，PDO提供的API接口和MYSQLI提供的接口对于普通的增删改查效果是一致的。
+
+最后贴下代码：
+MYSQL连接：
+<?php
+
+$conn = @ mysql_connect("localhost", "root", "") or die("数据库连接错误");
+
+mysql_select_db("bbs", $conn);
+
+mysql_query("set names 'utf8'");
+
+echo "数据库连接成功";
+
+?>
+
+MYSQLI连接：
+<?php
+
+$conn = mysqli_connect('localhost', 'root', '', 'bbs');
+
+if(!$conn){
+
+die("数据库连接错误" . mysqli_connect_error());
+
+}else{
+
+echo"数据库连接成功";
+
+}
+
+?>
+
+PDO连接：
+<?php
+
+try{
+
+$pdo=new pdo("mysql:host=localhost;dbname=bbs","root","");
+
+}catch(PDDException $e){
+
+echo"数据库连接错误";
+
+}
+
+echo"数据库连接成功";
+
+?>
+
+想更多去了解他们的区别和联系，可以手动去编译一下PHP的源代码。注意参数
+--enable-pdo 
+--with-pdo-mysql
+--enable-mysqlnd 
+--with-mysqli
+--with-mysql//php7的已经不再支持，此参数configure 的时候会报ERROR
+————————————————
+原文链接：https://blog.csdn.net/u013785951/java/article/details/60876816

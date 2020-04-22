@@ -1,0 +1,11 @@
+个人思路，仅供自己参考
+find / -name php   删除相关
+find / -name php*  删除相关
+
+然后，删除 /usr/bin/ 目录下的所有PHP相关的目录或文件
+rm -rf ./php (这个应该在上个步骤就被删了)
+rm -rf ./php-cgi
+rm -rf ./php-config
+rm -rf ./phpize
+
+参考文档：https://blog.csdn.net/hualaoshuan/article/details/95459934

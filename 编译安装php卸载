@@ -9,3 +9,7 @@ rm -rf ./php-config
 rm -rf ./phpize
 
 参考文档：https://blog.csdn.net/hualaoshuan/article/details/95459934
+
+其他处理方案：
+https://segmentfault.com/q/1010000009944281
+

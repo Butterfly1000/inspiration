@@ -70,11 +70,11 @@ yum bison
 --with-pear \
 --enable-opcache
 #make
+#make test
 #make install
 
 
-
-问题1：configure: error: off_t undefined; check your library configuration
+★问题1：configure: error: off_t undefined; check your library configuration
 在./configure之后报的错。
 网上解决办法1：
 添加搜索路径到配置文件
@@ -113,8 +113,52 @@ make install
 网上其他文章：
 http://www.data-master.net/2048700453
 
-参考文章
+★问题2：
+make的时候报
+libexslt.so: undefined reference to `xmlNewChild@LIBXML2_2.4.30
+libxslt.so: undefined reference to `xmlParserGetDirectory@LIBXML2_2.4.30'
+libxslt.so: undefined reference to `xmlDictQLookup@LIBXML2_2.6.0'
+...
+解析：
+问题在于--with-xsl
+看了很多文章，其中一篇写到，因为安装libxml2多个版本，导致混乱。
+
+方案：
+后面看了一下，yum和编译安装有两个版本libxml2，决定删除一个。（选择了版本高的）
+删除后，报错libxml2.so指向内容为空。
+解决方法，在改目录下，删除libxml2.so，然后软连接libxml2.so指向剩下的那版libxml2_2.9.1.so。（ln -s libxml2_2.9.1.so libxml2.so）
+然后，
+make clean
+./configure 一堆
+make test
+make
+就可以了。
+
+
+
+
+-------------------------
+附赠：
+tar -zcvf /tmp/filename.tar.gz /filename  #压缩命令
+tar -xzvf filename.tar.gz #解压tar.gz
+
+------------------------
+CentOS 7安装libzip-1.5.2
+https://blog.csdn.net/uisoul/article/details/86631469
+https://blog.csdn.net/MaxWoods/article/details/89383521 
+
+问题:off_t undefined; check your library configuration
+http://www.kwx.gd/PHPEnvironment/CentOS-PHP-off-t.html
+
+编译安装
+https://www.cnblogs.com/freeweb/p/5425554.html
 https://www.cnblogs.com/liubaoqing/p/12176017.html
 https://www.cnblogs.com/liubaoqing/p/9030277.html
+
+参考文档
 https://tieba.baidu.com/p/6215030753?red_tag=0791971963
 https://blog.csdn.net/zhangatle/article/details/90169494
+https://www.landui.com/help/show-9908.html
+http://www.data-master.net/2048700453
+https://www.cnblogs.com/zhang-ding-1314/p/8403819.html
+https://www.cnblogs.com/hanmk/p/10554359.html

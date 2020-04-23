@@ -1,0 +1,120 @@
+下载php7.2.5压缩包，解压。
+
+安装依赖包：
+yum install libxml2 libxml2-devel openssl openssl-devel bzip2 bzip2-devel libcurl libcurl-devel libjpeg libjpeg-devel libpng libpng-devel freetype freetype-devel gmp gmp-devel libmcrypt libmcrypt-devel readline readline-devel libxslt libxslt-devel zlib zlib-devel glibc glibc-devel glib2 glib2-devel ncurses curl gdbm-devel db4-devel libXpm-devel libX11-devel gd-devel gmp-devel expat-devel xmlrpc-c xmlrpc-c-devel libicu-devel libmcrypt-devel libmemcached-devel
+yum bison
+
+#cd 7.2.5；
+# ./configure \
+--prefix=/usr/local/php \
+--with-config-file-path=/etc \
+--enable-fpm \
+--with-fpm-user=www  \
+--with-fpm-group=www \
+--enable-inline-optimization \
+--disable-debug \
+--disable-rpath \
+--enable-shared  \
+--enable-soap \
+--with-libxml-dir \
+--with-xmlrpc \
+--with-openssl \
+--with-mhash \
+--with-pcre-regex \
+--with-sqlite3 \
+--with-zlib \
+--with-zlib-dir \
+--enable-bcmath \
+--with-iconv \
+--with-bz2 \
+--enable-calendar \
+--with-curl \
+--with-cdb \
+--enable-dom \
+--enable-exif \
+--enable-fileinfo \
+--enable-filter \
+--with-pcre-dir \
+--enable-ftp \
+--with-gd \
+--with-openssl-dir \
+--with-jpeg-dir \
+--with-png-dir \
+--with-freetype-dir \
+--enable-gd-jis-conv \
+--with-gettext \
+--with-gmp \
+--with-mhash \
+--enable-json \
+--enable-mbstring \
+--enable-mbregex \
+--enable-mbregex-backtrack \
+--with-libmbfl \
+--with-onig \
+--enable-pdo \
+--with-mysqli=mysqlnd \
+--with-pdo-mysql=mysqlnd \
+--with-pdo-sqlite \
+--with-readline \
+--enable-session \
+--enable-shmop \
+--enable-simplexml \
+--enable-sockets  \
+--enable-sysvmsg \
+--enable-sysvsem \
+--enable-sysvshm \
+--enable-wddx \
+--with-libxml-dir \
+--with-xsl \
+--enable-mysqlnd-compression-support \
+--with-pear \
+--enable-opcache
+#make
+#make install
+
+
+
+问题1：configure: error: off_t undefined; check your library configuration
+在./configure之后报的错。
+网上解决办法1：
+添加搜索路径到配置文件
+echo '/usr/local/lib64
+/usr/local/lib
+/usr/lib
+/usr/lib64'>>/etc/ld.so.conf
+更新配置
+ldconfig -v
+
+结果：无效
+
+网上解决办法2：
+libzip版本太低问题，确实报错的位置也是在zlib，所以就编译安装libzip
+wget https://nih.at/libzip/libzip-1.5.2.tar.gz
+tar zxvf libzip-1.5.2.tar.gz
+cd libzip-1.5.2
+mkdir build
+cd build
+cmake ..
+make
+make test
+make install
+
+如果提示CMAKE版本太低，
+解决方法：升级cmake
+文章：https://blog.csdn.net/zhangatle/article/details/90169494
+
+结果：无效（但升级libzip我觉得是没错的）
+
+最后处理方案：
+感觉是./configure没找到最新版的libzip
+--with-zlib-dir="libzip安装路劲" \
+结果就没报错了，但是否成功也不知道。
+
+网上其他文章：
+http://www.data-master.net/2048700453
+
+参考文章
+https://www.cnblogs.com/liubaoqing/p/12176017.html
+https://www.cnblogs.com/liubaoqing/p/9030277.html
+https://tieba.baidu.com/p/6215030753?red_tag=0791971963
+https://blog.csdn.net/zhangatle/article/details/90169494

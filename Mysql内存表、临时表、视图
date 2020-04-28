@@ -55,7 +55,7 @@ show warnings 能查看优化查询的sql语句
 
 1.内存表的建立
 CREATE TEMPORARY TABLE tmp_table (
-    id int(11) not null auto_increment,
+    id int(11) not null,
     name varchar(10) not null,
     value int(11) not null,
     primary key(id)
@@ -63,14 +63,54 @@ CREATE TEMPORARY TABLE tmp_table (
 #注意： TYPE = HEAP必须要有
 #和临时表不同的地方在于，多了个type=heap（堆）
 
+结果报1064错误！！！
+原因：
+使用MariaDB 创建表TYPE=HEAP 类型出现错误使用ENGINE=memory代替。
+-------------------------------------
+这边找了篇文章，原文链接https://blog.csdn.net/tianlianchao1982/article/details/7642031
+MEMORY存储引擎用存在内存中的内容来创建表。这些在以前被认识为HEAP表。
+MEMORY是一个首选的术语，虽然为向下兼容，HEAP依旧被支持。
+每个MEMORY表和一个磁盘文件关联起来。文件名由表的名字开始，并且由一个.frm的扩展名来指明它存储的表定义。
+要明确指出你想要一个MEMORY表，可使用ENGINE选项来指定：
+CREATE TABLE t (i INT) ENGINE = MEMORY;
+
+1.表受限于mysqld变量max_heap_table_size(默认16M)；
+2.HEAP数据表从MySQL4.1开始才允许使用自增列；
+3.ENGINE =Heap;从MySQL4.1后，首选 ENGINE =MEMORY;（重点！）
+4.From MySQL 4.1 on, hash indexes are still the default, but you can specify explicitly that a MEMORY table index should be a HASH or 
+  BTREE；
+5.与许多其他散列表不同，Heap表允许非惟一的键；
+6.Memory表使用固定长度行的格式存储；
+7.不支持BLOB或TEXT列；
+8.除了max_heap_table_size限制和计算机的内存限制以外，可以在有些安装上达到每个表4GB的限制，因为这个限制是由32位计算机的地址空间强加的。
+9.如果你正使用复制，当主服务器被关闭且重启动之时，主服务器的MEMORY表变空。可是从服务器意识不到这些表已经变空，所以如果你从它们选择数据， 
+  它就返回过时的内容。自从服务器启动后，当一个MEMORY表在主服务器上第一次被使用之时，一个DELETE FROM语句被自动写进主服务器的二进制日志，
+  因此再次让从服务器与主服务器同步。注意：即使使用这个策略，在主服务器的重启和它第一次使用该表之间的间隔中，从服务器仍旧在表中有过时数据。
+  可是，如果你使用--init-file选项于主服务器启动之时在其上推行MEMORY表。它确保这个时间间隔为零。（可以研究一下）
+-------------------------------------
+更新创建方法：
+CREATE TABLE tmp_table (
+    id int(11) not null auto_increment,
+    name varchar(10) not null,
+    value int(11) not null,
+    primary key(id)
+) ENGINE=MEMORY
+
 2.使用场景及注意事项
-  a.内存表使用hash索引把数据保存在内存中，具有更快的速度，可以用来缓存。
-  b.内存表对所有的用户连接都是可用的。这就意味着，多个会话连接的内存表名字不能重复，具有唯一性 
-  c.内存表如果复制数据进去的话，所有的原有格式都不会存在，需要重新设置
-  d.重启造成数据丢失，可以drop表之后重新复制数据等。这是最傻瓜的方法了。一定有更好的方法（待补充）
-  e.支持简单的操作符>=<这三个，我认为内存表用来缓存的话，应该不会涉及很复杂的操作。
-  f.不好的地方的话，应该在于数据了，因为数据都在内存里，处理起来应该蛮麻烦
-  e.内存表的默认引擎是memory
+使用场景：
+  a.内存表使用hash索引把数据保存在内存中，具有更快的速度，可以用来缓存。适合缓存中小型数据库（数据存在内存，大型容易吃不消）
+  b.内存表的默认引擎是memory
+注意: 
+  a.内存表不支持BLOB或TEXT类型;（已验证）
+  b.内存表对所有的用户连接都是可用的。这就意味着，多个会话连接的内存表名字不能重复，具有唯一性;(已验证)
+  c.内存表如果复制数据进去的话，所有的原有格式都不会存在，需要重新设置;复制之后所有主键、索引、自增等格式将不复存在，需要重新添加主键和索引。
+  d.重启造成数据丢失，可以drop表之后重新复制数据等。一定有更好的方法（参照上面）;
+  e.内存表不支持事务，而且是表锁，当修改频繁时，性能会下降;
+  f.支持简单的操作符>=<这三个，
+  （可能还有其他和版本有一定关系的注意点，但我使用的是>5.5.0的版本，未发现问题，就不贴了）
+缺点：  
+  a.不好的地方的话，应该在于数据了，因为数据都在内存里，要注意防止丢失；
+ 
 
 ★总结
 内存表和临时表的主要区别：

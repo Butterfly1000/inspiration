@@ -1,0 +1,98 @@
+Mysql三种虚拟表:临时表、内存表、视图。
+★临时表
+临时表是建立在系统临时文件夹中的表。临时表的数据和表结构都存储在内存之中，退出的时候所占的空间会被释放。
+
+1.创建临时表
+create temporary table tmp_table(
+    id int(11) not null auto_increment,
+    name varchar(10) not null,
+    value int(11) not null,
+    primary key(id)
+);
+
+2.关键字为temporary
+
+3.查看表结构
+≥ 注意:
+  show tables;
+  show table status
+  这两个命令"无法"查看临时表。 但是可以查内存表。
+
+4.可以查看表建立sql语句
+show create table tmp_table; (个人喜欢：show create table tmp_table\G;)
+
+5.直接将查询结果导入临时表
+CREATE TEMPORARY TABLE tmp_table SELECT * FROM table_name
+
+6.设定临时表大小
+tmp_table_size #临时表的容量
+
+7.临时表的应用场景
+当工作在十分大的表上运行时，运行相关查询，来获的一个大量数据的小的子集。较好的办法，不是对整个表运行这些查询，而是让MySQL每次找出所需的少数记录，
+将记录选择到一个临时表，然后对这些表运行查询。
+ a.一个sql语句关联两个表以上的时候，查询到的结果存放在临时表中。
+ b.程序执行过程中可能需要存放一些临时的数据，这些数据在整个程序的会话过程中都需要用的等等
+ c.临时表默认的是MyISAM,但是可以修改
+ d.内部临时表，就是查询的时候，服务器会优化查询，使用内部临时表。比如 order by 的列不是表中的第一列。
+
+show warnings 能查看优化查询的sql语句
+
+8.临时表的注意事项
+ a.临时表只在当前连接可见，当这个连接关闭的时候，会自动drop。比如打开mysql就是一个连接会话。两个不同的连接可以使用相同名字的临时表，两个表之间
+   不存在什么关系，如果临时表的名字和已经存在的磁盘表名字一样，那么临时表会"暂时覆盖"磁盘表。就是说，你select 查询，只会显示临时表里面的，不会
+   显示磁盘表。
+ b.临时表的存储引擎：memor，myisam，merge，innodb
+ c.临时表不支持，mysql cluster(集群)
+ d.同一个查询语句，只能用一次临时表，就是说不能将表和自己做连接等。
+ e.重命名表，不能用rename 可以用alter table代替
+   RENAME TABLE tbl_name TO new_tbl_name[, tbl_name2 TO new_tbl_name2,...]   ×（错误，针对临时表）
+   alter table old_name rename new_name   √（正确）
+ f.如果超出了临时表的容量，临时表会转换成磁盘表（要特别注意，否则可能会莫名其妙方向磁盘空间不足了）
+
+★内存表
+简介：
+内存表的表结构建立在磁盘里面，数据放在内存里面，当mysql重启之后，内存表的数据会丢失，表结构依旧存在，会执行一次truncate操作（截断表）。
+
+1.内存表的建立
+CREATE TEMPORARY TABLE tmp_table (
+    id int(11) not null auto_increment,
+    name varchar(10) not null,
+    value int(11) not null,
+    primary key(id)
+)  TYPE = HEAP  
+#注意： TYPE = HEAP必须要有
+#和临时表不同的地方在于，多了个type=heap（堆）
+
+2.使用场景及注意事项
+  a.内存表使用hash索引把数据保存在内存中，具有更快的速度，可以用来缓存。
+  b.内存表对所有的用户连接都是可用的。这就意味着，多个会话连接的内存表名字不能重复，具有唯一性 
+  c.内存表如果复制数据进去的话，所有的原有格式都不会存在，需要重新设置
+  d.重启造成数据丢失，可以drop表之后重新复制数据等。这是最傻瓜的方法了。一定有更好的方法（待补充）
+  e.支持简单的操作符>=<这三个，我认为内存表用来缓存的话，应该不会涉及很复杂的操作。
+  f.不好的地方的话，应该在于数据了，因为数据都在内存里，处理起来应该蛮麻烦
+  e.内存表的默认引擎是memory
+
+★总结
+内存表和临时表的主要区别：
+1.存储
+内存表 表结构存储在磁盘中，数据存储在内存中
+临时表 表结构和数据都存储在内存中
+
+2.会话
+内存表 是可以多个会话共享的
+临时表 是单个会话独享的，是会话级别的
+
+3.引擎
+内存表默认，memory
+临时表默认，myisam
+
+4.断开连接
+临时表 啥都不剩
+内存表 只剩下表结构
+
+5.性能
+内存表由于所有的内容都是放在内存中，所以相对来说，速度较快但是同时数据的维护较为困难
+
+★视图
+
+原文链接：https://blog.csdn.net/qq_41376740/java/article/details/79393943

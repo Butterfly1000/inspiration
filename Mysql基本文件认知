@@ -32,6 +32,15 @@ ibd：文件存储了索引和数据。该存储引擎要求存储数据文件�
 答：必须有一个B+Tree来组织数据文件。如果不指定主键，mysql也会自动生成一个主键（使用唯一列或自动加一列）。
 整型所占用的存储空间较小，而且整型数据容易做比较（检索）。使用自增主键更便于插入，避免或减少了B+Tree的调整。
 
+
+★存储过程或函数存放位置：
+mysql数据库=====》proc表存放对存储过程或函数的描述；
+information_schema数据库=====》ROUTINES表存放具体的存储过程
+
+★视图存放位置
+information_schema数据库=====》VIEWES表存放具体的视图定义
+
 参考文章：
 https://www.csdn.net/gather_21/MtTaIg2sNDcxMC1ibG9n.html
 https://www.mycodes.net/77/7177.htm
+https://blog.csdn.net/zhuifengshaonian201/java/article/details/80184537

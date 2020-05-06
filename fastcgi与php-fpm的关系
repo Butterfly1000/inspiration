@@ -1,0 +1,132 @@
+这一篇真的内容非常多，整合也挺累的，但还是慢慢讲。
+★sapi（应用程序接口） 
+SAPI提供了一个和外部通信的接口，有点类似于socket，使得PHP可以和其他应用进行交互数据（apache,nginx等）。
+php默认提供了很多种SAPI，常见的给apache和nginx的php5_module，CGI，给IIS的ISAPI，还有Shell的cli。
+
+★mod_php模式和mod_fastcgi模式
+sapi是php提供的统一接口，它提供给了php5_module和cgi等方式供web服务器来链接和解析php代码。
+
+ ◆mod_php模式：
+ apache调用php执行的过程如下：
+ apache -> httpd -> php5_module -> sapi -> php
+
+ 缺点：
+ 1.mod_php模式是将php模块安装到apache中，所以每一次apache发出的请求，都会产生一条进程，这个进程就完整的包括php的各种运算计算等操作。
+   每接收一个请求，都会产生一个进程来连接php通过sapi来完成请求，可想而知，如果一旦用户过多，并发数过多，服务器就会承受不住了。
+   
+ 2.把mod_php编进apache时，出问题时很难定位是php的问题还是apache的问题。
+
+ ◆mod_fastcgi模式
+ php的sapi的另一种方式就是提供cgi模式，由于cgi比较老所以就出现了fastcgi来取代它。
+
+ 优点：
+ 1.mod_fastcgi模式则刚刚相反，fastcgi是一个独立与apache和php的独立个体，它随着apache一起启动，生成多个cig模块，等着apache的请求：一有apache发来
+  的httpd请求就立马接收过来，通过调用sapi给php，完成运算。而且不会退出。这样就能应对大规模的并发请求，因为web server的要做的事情少了，所以就更快的
+  去处理下一个请求，这样并发大大的。
+
+ 2.由于apache 与 php 独立了。出问题，很好定位到底是哪里出问题了。这点也是这种模式受欢迎的原因之一。
+ 
+★cgi
+CGI全称是“公共网关接口”(Common Gateway Interface)。
+CGI是外部应用程序（CGI程序）与Web服务器之间的接口标准，是在CGI程序和Web服务器之间传递信息的规程（规则+流程）。CGI规范允许Web服务器执行外部程序，
+并将它们（外部程序）的输出发送给Web浏览器，CGI将Web的一组简单的静态超媒体文档变成一个完整的新的交互式媒体。
+
+简单的说，就是：cgi就是专门用来和web服务器打交道的。web服务器收到用户请求，就会把请求提交给cgi程序（php的fastcgi），cgi程序根据请求提交的参数
+作应处理（解析php），然后输出标准的html语句返回给web服服务器，再返回给客户端，这就是普通cgi的工作原理。
+
+优点：
+cgi的好处就是完全独立于任何服务器，仅仅是做为中间分子。提供接口给web server和php。他们通过cgi搭线来完成交互动作。这样尽量减少二者的关联，
+使他们变得更独立。
+
+缺点：
+但是cgi有个蛋疼的地方，就是每一次web请求都会有启动和退出过程，也就是最为人诟病的fork-and-execute模式，这样一在大规模并发下，就死翘翘了。
+
+
+★fastcgi（升级版cgi）
+FastCGI全称 快速公共网关接口(Fast Common Gateway Interface)。 FastCGI像是一个常驻(long-live)型的CGI,只要激活后,它可以一直执行着,
+不会每次都要花费时间去fork一次(这是CGI最为人诟病的fork-and-execute 模式)。
+
+fastcgi的对进程的管理
+首先，Fastcgi会先启一个master，解析配置文件，初始化执行环境，然后再启动多个worker。当请求过来时，master会传递给一个worker，然后立即可以接受
+下一个请求。这样就避免了重复的劳动，效率自然是高。而且当worker不够用时，master可以根据配置预先启动几个worker等着；当然空闲worker太多时，也会
+停掉一些，这样就提高了性能，也节约了资源。
+
+简单的说（总结上面两段），
+fastcgi事先就早早的启动好了（master），而且可以启动多个cgi模块（worker），在那里一直运行着等着，等着web发过来的请求，然后再给php解析运算完成
+生成html给web后，也不会退出，而且继续等着下一个web请求（常驻）。而且这些cgi的模块启动是可控的，可监测的。
+
+特点：
+fastcgi还允许把web server和php运行在不同的主机上，以大规模扩展和改进安全性而不损失生产效率。
+>>解析：支持分布式的运算，即FastCGI 程序可以在网站服务器以外的主机上执行并且接受来自其它网站服务器来的请求。(负载均衡)
+
+★PHP-CGI
+PHP-CGI是PHP自带的FastCGI管理器。
+
+不足：
+php-cgi变更php.ini配置后需重启php-cgi才能让新的php-ini生效，不可以平滑重启。
+直接杀死php-cgi进程，php就不能运行了。(PHP-FPM和Spawn-FCGI就没有这个问题，守护进程会平滑重新生成新的子进程。）
+
+★PHP-FPM
+
+
+
+cgi  php-cgi fastcgi php-fpm
+
+
+
+
+
+
+
+
+首先，CGI(Common Gateway Interface 公共网关接口)是干嘛的？CGI是为了保证web server传递过来的数据是标准格式的，方便CGI程序的编写者。
+
+web server（比如说nginx）只是内容的分发者。
+比如，如果请求/index.html，那么web server会去文件系统中找到这个文件，发送给浏览器，这里分发的是静态数据。(针对静态文件)
+
+如果现在请求的是/index.php，根据配置文件，nginx知道这个不是静态文件，需要去找PHP解析器来处理，那么他会把这个请求简单处理后交给PHP解析器。
+Nginx会传哪些数据给PHP解析器呢？url要有吧，查询字符串也得有吧，POST数据也要有，HTTP header不能少吧，好的，CGI就是规定要传哪些数据、
+以什么样的格式传递给后方处理这个请求的协议。
+
+当web server收到/index.php这个请求后，会启动对应的CGI程序，这里就是PHP的解析器。接下来PHP解析器会解析php.ini文件，初始化执行环境，然后处理请求，
+再以规定CGI规定的格式返回处理后的结果，退出进程。web server再把结果返回给浏览器。
+
+CGI是个协议，跟进程什么的没关系。那fastcgi又是什么呢？Fastcgi是用来提高CGI程序性能的。
+
+提高性能，那么CGI程序的性能问题在哪呢？"PHP解析器会解析php.ini文件，初始化执行环境"，就是这里了。标准的CGI对每个请求都会执行这些步骤（每次都
+初始化环境对系统消耗太大！），所以处理每个时间的时间会比较长。这明显不合理嘛！那么Fastcgi是怎么做的呢？首先，Fastcgi会先启一个master，解析配置文件，
+初始化执行环境，然后再启动多个worker。当请求过来时，master会传递给一个worker，然后立即可以接受下一个请求。这样就避免了重复的劳动，效率自然是高。
+而且当worker不够用时，master可以根据配置预先启动几个worker等着；当然空闲worker太多时，也会停掉一些，这样就提高了性能，也节约了资源。
+这就是fastcgi的对进程的管理。
+
+那PHP-FPM又是什么呢？是一个实现了Fastcgi的程序，被PHP官方收了。
+
+大家都知道，PHP的解释器是php-cgi。php-cgi只是个CGI程序，他自己本身只能解析请求，返回结果，不会进程管理（皇上，臣妾真的做不到啊！）所以就出现了一些
+能够调度php-cgi进程的程序，比如说由lighthttpd分离出来的spawn-fcgi。好了PHP-FPM也是这么个东东，在长时间的发展后，逐渐得到了大家的认可（要知道，前
+几年大家可是抱怨PHP-FPM稳定性太差的），也越来越流行。
+
+好了，最后来回来你的问题。
+fastcgi是一个协议，php-fpm实现了这个协议？
+对。
+
+有的说，php-fpm是fastcgi进程的管理器，用来管理fastcgi进程的
+
+对。php-fpm的管理对象是php-cgi。但不能说php-fpm是fastcgi进程的管理器，因为前面说了fastcgi是个协议，似乎没有这么个进程存在，就算存在php-fpm也管
+理不了他（至少目前是）。
+
+php-fpm是php内核的一个补丁？
+以前是对的。因为最开始的时候php-fpm没有包含在PHP内核里面，要使用这个功能，需要找到与源码版本相同的php-fpm对内核打补丁，然后再编译。后来PHP内核集
+成了PHP-FPM之后就方便多了，使用--enalbe-fpm这个编译参数即可。
+
+修改了php.ini配置文件后，没办法平滑重启，所以就诞生了php-fpm？
+是的，修改php.ini之后，php-cgi进程的确是没办法平滑重启的。php-fpm对此的处理机制是新的worker用新的配置，已经存在的worker处理完手上的活就可以
+歇着了，通过这种机制来平滑过度。
+
+还有的说PHP-CGI是PHP自带的FastCGI管理器，那这样的话干吗又弄个php-fpm出
+不对。php-cgi只是解释PHP脚本的程序而已。
+
+
+原文链接：
+https://blog.csdn.net/u011280342/article/details/78121132
+https://segmentfault.com/q/1010000000256516
+http://www.nowamagic.net/librarys/veda/detail/1319

@@ -1,0 +1,34 @@
+在centos7重启php-fpm时突然出现报错信息。
+/usr/bin/systemctl restart php-fpm.service
+
+通过journalctl -xe命令发现，错误原因：之前定义systemctl下的php-fpm.service路径由于重装php改变了。
+
+解决：
+vim /usr/lib/systemd/system/php-fpm.service
+
+设置：
+#ExecStart=/usr/php/sbin/php-fpm --nodaemonize -R
+ExecStart=php-fpm路径地址
+systemctl daemon-reload
+
+然后，继续重启，仍报错，通过journalctl -xe，
+ERROR: unable to bind listening socket for address '127.0.0.1:9000': Address already in use (98)
+
+很明显问题在于9000端口被占用
+netstat -apn | grep 9000 发现是"php-fpm"进程占用了
+
+详细查看
+ps -ef | grep "php-fpm"
+或
+ps -aux | grep "php-fpm"
+
+kill 进程
+kill -9 22966
+把占用9000的端口进程全部kill掉
+
+然后启动php-fpm
+/usr/bin/systemctl start php-fpm.service
+
+成功！
+
+后面stop，restart进程就都正常了。

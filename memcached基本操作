@@ -26,7 +26,14 @@ gets      获取带有cas令牌的值    get key                                
                                 gets key1 key2 key3                       $m->getMulti(array('key1','key2','girl'),$cas);
 
 delete    删除                  delete key [noreply]                      $m->delete(key,time);
-                              
+
+incr      数字值自增             incr key number                           $m->increment(key,number);
+ 
+decr      数字值自减             decr key number                           $m->decrement(key,number);
+
+stats     统计信息               stats                                     $m->getStats()
+          (memcache运行的整个状态和参数)
+ 
 参数说明:
 key：键值
 flags：可以包括键值对的整型参数，客户机使用它存储关于键值对的额外信息,使用MEMCACHE_COMPRESS指定对值进行压缩(使用zlib),0不操作。

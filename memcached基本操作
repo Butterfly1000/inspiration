@@ -1,0 +1,40 @@
+★常用操作
+命令        说明                cli命令示例                                 PHP写法
+set         存储                set key flags exptime bytes [noreply]      $m->set(key,value,time()+300);
+                                value                                      $m->setMulti(array('key1'=>value1,'key2'=>value2),time()+300)
+
+add         键值不存在则存储     add key flags exptime bytes [noreply]      $m->add(key,value,3600)
+                                value
+
+replace     键值存在则替换       replace key flags exptime bytes [noreply]  $m->replace(key,value,time()+300)
+                                value
+
+append      已存在的键后面追加    append key flags exptime bytes [noreply]  $m->append(key,value)
+            数据                 value
+            
+
+prepend     已存在的键前面追加    prepend key flags exptime bytes [noreply]  $m->prepend(key,value)
+            数据                 value
+
+cas        最后一次取值后未修     cas key flags exptime bytes [noreply] unique_cas_token  $m->cas(cas_token,key,value)
+           改再写入              value
+          
+get       取值                  get key                                    $m->get(key);
+                                gets key1 key2 key3                        $m->getMulti(array('key1','key2','girl'));
+
+gets      获取带有cas令牌的值    get key                                   $m->get(key,$cas);
+                                gets key1 key2 key3                       $m->getMulti(array('key1','key2','girl'),$cas);
+
+delete    删除                  delete key [noreply]                      $m->delete(key,time);
+                              
+参数说明:
+key：键值
+flags：可以包括键值对的整型参数，客户机使用它存储关于键值对的额外信息,使用MEMCACHE_COMPRESS指定对值进行压缩(使用zlib),0不操作。
+exptime：在缓存中保存键值对的时间长度（以秒为单位，0 表示永远）
+bytes：在缓存中存储的字节数
+noreply（可选）： 该参数告知服务器不需要返回数据
+value：存储的值（始终位于第二行）
+
+输出信息说明：
+STORED：保存成功后输出。
+ERROR：在保持失败后输出。

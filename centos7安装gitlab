@@ -64,20 +64,46 @@ ps:注意这里设置的端口不能被占用，默认是8080端口，如果8080
  c.卸载
  yum remove gitlab-ce
 
- 8.注意
- 依照上面的源码编译，单核，内存<=2G,服务器很可能会崩溃。
+8.注意
+ 依照上面的源码编译，单核，内存<=2G,服务器很可能会崩溃。=》这个真是硬伤，很难
  原因：这种情况可能就是gitlab占用内存过大，
- 解决方案：
+ 解决方案（单核2G内存还是很难）：
  vim /etc/gitlab/gitlab.rb
  unicorn['worker_processes'] = 2
  重新加载配置
  重启gitlab
 （建议worker=CPU核数+1）
  
+★常见问题：
+1.执行配置文件时
+“ruby_block[wait for redis service socket] action run”无法继续执行下去
+解决方案：
+systemctl restart gitlab-runsvdir
+gitlab-ctl reconfigure
+
+2.安装卡住（sudo gitlab-ctl reconfigure后）
+这基本是内存不足导致
+* execute[clear the gitlab-rails cache] action run（这个卡了很久）
+================================================================================
+Error executing action `run` on resource 'execute[clear the gitlab-rails cache]'
+================================================================================
+
+3.当我们成功安装、配置 GitLab 后，不一定就万事大吉了，访问 GitLab 的时候可能会出现如下错误
+502
+GitLab 所需内存最低为 4G，若服务器配置太低会出现 502 错误
+
+4.GitLab 新装或重启后，需要等待 1 分钟才能使用
+对于单核 CPU 的服务器，Unicorn and Sidekiq 服务启动最少需要一分钟
+
+★总结：
+没有高于4G内存，尽量不要安装gitlab，在另一篇文章将尝试使用docker安装。
+
 原文/参考链接：
 https://www.jianshu.com/p/5b0da0bfe031
 https://blog.csdn.net/justlpf/article/details/80681332
 https://blog.csdn.net/duyusean/article/details/80011540
+https://blog.csdn.net/qq_34316514/article/details/104967440
+https://www.cnblogs.com/youzhibing/p/12572598.html
 
 
 

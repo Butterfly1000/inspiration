@@ -40,13 +40,44 @@ sudo vim /etc/gitlab/gitlab.rb        # 修改默认的配置文件；
 gitlab-rake gitlab:check SANITIZE=true --trace    # 检查gitlab；
 sudo gitlab-ctl tail        # 查看日志；
 
-5.使用
+5.修改gitlab配置文件指定服务器ip和自定义端口：
+vim  /etc/gitlab/gitlab.rb
+查找external_url，修改后面的内容(例如:http://ip地址:端口号)
+ps:注意这里设置的端口不能被占用，默认是8080端口，如果8080已经使用，请自定义其它端口，并在防火墙设置开放相对应得端口
 
+6.重置并启动GitLab
+  执行：
+  gitlab-ctl reconfigure
+  gitlab-ctl restart
 
+7.遇到因为启动gitlab,cpu直接飙升的情况（通过top/htop查看）
+ a.停止gitlab
+ gitlab-ctl stop  #这个动作很重要，cpu瞬间降下去
+
+ b.查看开机启动状态
+ #systemctl list-unit-files | grep gitlab
+ 结果：
+ gitlab-runsvdir.service  enabled
+ 表明开机启动，这样下次重启还是会这样，所以关闭开机启动
+ #systemctl disable gitlab-runsvdir.service
+ 
+ c.卸载
+ yum remove gitlab-ce
+
+ 8.注意
+ 依照上面的源码编译，单核，内存<=2G,服务器很可能会崩溃。
+ 原因：这种情况可能就是gitlab占用内存过大，
+ 解决方案：
+ vim /etc/gitlab/gitlab.rb
+ unicorn['worker_processes'] = 2
+ 重新加载配置
+ 重启gitlab
+（建议worker=CPU核数+1）
+ 
 原文/参考链接：
 https://www.jianshu.com/p/5b0da0bfe031
 https://blog.csdn.net/justlpf/article/details/80681332
-
+https://blog.csdn.net/duyusean/article/details/80011540
 
 
 

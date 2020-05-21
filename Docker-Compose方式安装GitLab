@@ -1,0 +1,49 @@
+之前有一篇是用源码编译安装gitlab，但在单核2G内存的环境失败了，这次用docker-compose进行尝试(建议还是>=2核2G内存)
+
+安装docker-compose之前的文章已有详细介绍。
+
+★用docker-compose安装gitlab
+1.创建目录和docker-compose.yml文件
+#cd opt
+#mkdir -p docker-compose
+#cd docker-compose
+#touch docker-compose.yml
+#vim docker-compose.yml
+docker-compose.yml内容
+version : "3.7"
+services:
+  gitlab:
+    image: 'twang2218/gitlab-ce-zh:latest'
+    ports:
+      - "8080:80"
+      - "8081:443"
+      - "8082:22"
+    privileged: true
+    volumes:
+      - /opt/docker-gitlab/etc:/etc/gitlab/
+      - /opt/docker-gitlab/log:/var/log/gitlab/
+      - /opt/docker-gitlab/data:/var/opt/gitlab/
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+            external_url 'ip地址'
+            gitlab_rails['gitlab_shell_ssh_port'] = 8082
+
+#mkdir -p etc
+#mkdir -p log
+#mkdir -p data
+
+2.拉取gitlab中文版镜像
+#docker pull twang2218/gitlab-ce-zh:latest
+
+3.启动gitlab的容器
+#docker-compose up -d
+
+访问：地址：端口号 =》成功！！
+
+
+
+原文链接：
+https://www.cnblogs.com/linuxk/p/10100431.html
+
+
+

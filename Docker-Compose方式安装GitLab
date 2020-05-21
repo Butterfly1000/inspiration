@@ -38,12 +38,16 @@ services:
 3.启动gitlab的容器
 #docker-compose up -d
 
+4.停止docker-compose
+#docker-compose stop
+
 访问：地址：端口号 =》成功！！
 
 
 
 原文链接：
+https://www.jianshu.com/p/2d76092ebf53
 https://www.cnblogs.com/linuxk/p/10100431.html
-
+https://blog.csdn.net/liguangxianbin/article/details/79492866(docker-compose.yml参数介绍)
 
 

@@ -9,8 +9,24 @@ Docker是一个开源的容器引擎，它有助于更快的交付应用。Docke
 Docker-compose：是一个用于定义和运行多容器Docker应用程序的工具。在微服务架构中，应用系统一般包含若干个微服务，每个微服务可能会部署多个实例。
 如果每个微服务都要手动启停，那么会造成很大的维护成本，效率也很低。使用docker-compose进行镜像的编排，高效的管理容器。
 
-★安装：
+Docker具体介绍：https://www.runoob.com/docker/docker-tutorial.html
 
+★安装：
+Docker
+Docker要求运行在Centos 7上，要求系统为64位，系统内核版本3.10以上
+1.uname -an 查看当前系统版本
+
+2.yum -y install docker 下载安装docker
+
+3.systemctl start docker  启动docker服务
+
+4.docker version  检查docker是否安装成功
+
+原文/参考链接：
+https://blog.csdn.net/xinzhifu1/article/details/83579256
+https://www.cnblogs.com/zhangyinhua/p/10286507.html
+
+--->>>>>>
 
 Docker-compose
 方法一：
@@ -20,15 +36,33 @@ chmod +x /usr/local/bin/docker-compose
 查看版本信息
 # docker-compose --version
 
-问题：此方法会经常因为网络的原因而无法安装
+问题：此方法会经常因为网络的原因而无法安装(不推荐)
 
 方法二：
-1、安装python-pip
+1、安装epel-release和python-pip
 yum -y install epel-release
 yum -y install python-pip
 
-2、安装docker-compose
+2、对安装好的pip进行升级
+pip install --upgrade pip
+
+3、安装docker-compose
 pip install docker-compose
 
 查看版本信息
 #docker-compose version
+
+常见问题：
+报错：ERROR: jsonschema 3.2.0 has requirement six>=1.11.0, but you'll have six 1.9.0 which is incompatible.
+问题：本版太低
+解决方法：pip install six --user -U
+
+报错：_posixsubprocess.c:16:20: fatal error: Python.h: No such file or directory
+     command ‘gcc’ failed with exit status 1
+问题：缺少python依赖包
+解决方法：sudo yum -y install python-devel
+
+原文/参考链接：
+https://www.cnblogs.com/YatHo/p/7815400.html
+https://blog.csdn.net/leeb2011/article/details/100675342
+https://blog.csdn.net/u013414502/article/details/79531509

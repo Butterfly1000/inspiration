@@ -43,11 +43,17 @@ services:
 
 访问：地址：端口号 =》成功！！
 
+查看：
+#docker ps -a
+#docker exec -it  bc4dca71bc7f  bash
 
+访问后会有一个页面让你修改密码，默认账户是root；
+可以通过root账户进行管理。
 
 原文链接：
 https://www.jianshu.com/p/2d76092ebf53
 https://www.cnblogs.com/linuxk/p/10100431.html
 https://blog.csdn.net/liguangxianbin/article/details/79492866(docker-compose.yml参数介绍)
+https://blog.csdn.net/Adelly/article/details/79099772#_Toc480656594（具体操作）
 
 

@@ -26,4 +26,4 @@ hash 索引结构的特殊性，其检索效率非常高，索引的检索可以
 对于选择性比较低的索引键，如果创建 Hash 索引，那么将会存在大量记录指针信息存于同一个 Hash 值相关联。这样要定位某一条记录时就会非常麻烦，
 会浪费多次表数据的访问，而造成整体性能低下。
 
-https://www.cnblogs.com/vicenteforever/articles/1789613.html
+原文链接：https://www.cnblogs.com/vicenteforever/articles/1789613.html

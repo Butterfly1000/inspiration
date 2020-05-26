@@ -1,1 +1,44 @@
+前提：
+使用phpstorm上传代码到GitHub,我们需要先下载安装包 git.exe
+地址：https://git-for-windows.github.io/
+
+step1、打开phpstrom
+
+step2、打开phpstrom的设置项settings，快捷键Ctrl+Alt+S
+
+step3、打开版本控制器Version Control，找到Git，然后将安装后的git.exe路劲填入。
+
+step4、打开版本控制器Version Control，找到GitHub，然后进行验证。
+现在github不赞成用用户名+密码的形式登录。而是希望用户使用token令牌登录。
+
+获取token令牌，
+1：点击你的GitHub头像，选择下拉框中的“settings”；
+2:选择左侧菜单的“Developer settings”一项；
+3:选择“Personal access tokens”；
+4:点击“Generate a personal access token”；
+5：把以下选项全部勾选，然后点击下方绿色按钮，便可生成一个token;
+(原文链接：https://www.cnblogs.com/leon-2016/p/9284837.html)
+
+另一种是点击Create API Token,然后再弹框中输入账号密码验证。
+
+这时候可能出现"连接不成功"的问题：
+先ping一下，ping不通。
+打开 hosts文件，地址：C:\Windows\System32\drivers\etc 
+然后在hosts文件中添加：
+192.30.253.112 github.com      （重点）
+151.101.88.249 github.global.ssl.fastly.net
+（详细解决方案：https://www.cnblogs.com/xiaoliangyuu/p/11486158.html）
+
+step5、打开vcs，从版本库拉取项目（checkout form Version Controller），选择git。在弹窗中输入版本库的url，选择你想要存放的路径，单击克隆Clone，
+等待克隆到本地即可。
+
+使用篇：
+这个就不介绍了，参考链接很详细。
+
+
+参考链接：
+https://blog.csdn.net/linyunping/article/details/79542450
+https://www.cnblogs.com/candy-Yao/p/9282419.html
+https://blog.csdn.net/youngj_zhou/article/details/90607197（细节不够完善）
+
 

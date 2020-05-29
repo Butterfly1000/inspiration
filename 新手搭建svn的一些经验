@@ -88,6 +88,7 @@ svn co svn://你的ip 你想放在那个目录(这样的创建到web目录如果
 svn export svn：//你的ip 你想放在哪个目录(这样的web目录没有svn隐藏文件，但是不能直接用svn update更新，推荐上面的)
 个人实践 ->   svn co svn://localhost/svnrepos  /data/wwwroot/svnrepos  --username 用户名 --password 密码（用户名密码不添加，执行后需输入）
 简单：svn co svn：//localhost/项目文件名  输入服务器账号密码（可能是root） 然后会提示输入svn账号密码
+svn co svn://127.0.0.1:3690 /项目文件名
 
 完成后，就可以看到项目内容，但无法更新，这时候就需要用到钩子。
 

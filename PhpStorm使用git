@@ -33,7 +33,16 @@ step5、打开vcs，从版本库拉取项目（checkout form Version Controller�
 等待克隆到本地即可。
 
 使用篇：
-这个就不介绍了，参考链接很详细。
+当有一个新项目（不在同一个git仓库中）到了，
+用step5进行Clone，弹出窗口请求输入账号，密码。
+如果输入错误，再一次克隆，则会报 Clone failed: Authentication failed for 'http://xxxxxxxx'，另外没有再出现输入账号密码的窗口。
+
+解决方案：
+在git.exe文件下（设置全局变量的忽略），打开命令管理器，输入git config --system --unset credential.helper
+
+然后，再clone一次就可以了。
+
+其他就不介绍了，参考链接很详细。
 
 
 参考链接：

@@ -1,0 +1,28 @@
+★前置条件
+1.安装redis服务 （本章不介绍，可用yum或在其他章节了解）
+
+2.hiredis库
+hiredis下载地址：https://github.com/redis/hiredis/releases
+#wget https://github.com/redis/hiredis/archive/v0.14.1.tar.gz
+#tar -xzvf v0.14.1.tar.gz
+#cd 目录
+#make -j
+#sudo make install
+#sudo ldconfig
+
+3.编译swoole 需要加入 -enable-async-redis
+cd swoole目录
+#./configure --with-php-config=/usr/local/php/bin/php-config --enable-async-redis
+#make clean
+#make -j
+#sudo make install
+
+★检测：
+php -m 查看swoole是否存在;
+
+php --ri swoole
+查看async redis client => enabled，证明可以使用异步redis。
+
+
+
+

@@ -1,0 +1,34 @@
+composer 创建自己包
+https://www.cnblogs.com/xuey/p/9734930.html
+
+{
+    "name": "kj/hidegame",
+    "description": "this is a game",
+    "authors": [
+        {
+            "name": "kj",
+            "email": "2496978350@qq.com"
+        }
+    ],
+    "require": {}
+}
+
+报错：
+[Composer\Exception\NoSslException] The openssl extension is required for SSL/TLS protection but is not available. If you can not 
+enable the openssl ex tension, you can disable this error, at your own risk, by setting the 'disable-tls' option to true.
+方案一:
+composer config -g -- disable-tls true #关闭Composer的TLS来修复，注意：它不安全
+方案二（正确）：
+
+
+
+https://www.jianshu.com/p/46150555273b 
+https://www.cnblogs.com/phpper/p/10282907.html
+
+windows下 composer常见错误及处理：
+https://blog.csdn.net/fatong3/article/details/53819787
+
+windows环境，注意全局变量php.ini（以这个为准）
+
+问题：composer error:1416F086:SSL routines:tls_process_server_certificate:certificate verify faile
+

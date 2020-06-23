@@ -1,0 +1,59 @@
+★安装：
+1、查看php本版对应的xdebug安装版本：
+[root@aiezu.com ~]# yum list|grep xdebug
+php-pecl-xdebug.x86_64                  2.2.7-1.el7                    epel     
+php54-php-pecl-xdebug.x86_64            2.4.1-1.el7.remi               remi-safe
+php55-php-pecl-xdebug.x86_64            2.5.5-1.el7.remi               remi-safe
+php56-php-pecl-xdebug.x86_64            2.5.5-1.el7.remi               remi-safe
+php70-php-pecl-xdebug.x86_64            2.9.0-1.el7.remi               remi-safe
+php71-php-pecl-xdebug.x86_64            2.9.6-1.el7.remi               remi-safe
+php72-php-pecl-xdebug.x86_64            2.9.6-1.el7.remi               remi-safe
+php73-php-pecl-xdebug.x86_64            2.9.6-1.el7.remi               remi-safe
+php74-php-pecl-xdebug.x86_64            2.9.6-1.el7.remi               remi-safe
+
+#根据php版本选择适合的
+下载地址：https://xdebug.org/download.php
+下载
+wget https://xdebug.org/files/xdebug-2.9.6.tgz
+
+日常解压
+tar xvzf xdebug-2.9.6.tgz
+
+进入目录
+cd xdebug-2.9.6
+phpize
+./configure --enable-xdebug --with-php-config=/usr/local/php/bin/php-config
+make
+make install
+
+★编辑php.ini，加入下面配置，一般的功能都打开了
+版本1
+zend_extension = "/usr/local/php/lib/php/extensions/no-debug-non-zts-20170718/xdebug.so"
+xdebug.remote_enable = 1
+xdebug.remote_connect_back = 1
+xdebug.remote_port = 9000
+xdebug.scream = 0 
+xdebug.cli_color = 1
+xdebug.show_local_vars = 1
+xdebug.remote_handler = "dbgp"
+
+版本2
+zend_extension=/usr/lib64/php/modules/xdebug.so
+xdebug.remote_host=192.168.1.5 #调试的本机IP
+xdebug.remote_mode="req"
+xdebug.remote_port=9010 #端口号
+xdebug.idekey="PHPSTORM" #与phpstorm开发工具内的配置对应
+xdebug.remote_enable=on
+xdebug.remote_autostart=1
+xdebug.remote_log=/disk1/ans_workspace/xdebug.log #日志
+
+★重启php-fpm
+systemctl restart php-fpm
+
+★php -m
+里面已经有xdebug了，可以使用xdebug_debug_zval()这样的函数了。
+————————————————
+参考/原文链接：
+https://www.cnblogs.com/wicub/p/6226996.html
+https://blog.csdn.net/finnson/java/article/details/80065054
+https://blog.csdn.net/donglynn/article/details/69808663（具体+详细）

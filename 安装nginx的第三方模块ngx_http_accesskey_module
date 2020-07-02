@@ -1,0 +1,62 @@
+ngx_http_accesskey_module这个模块是nginx的第三方模块，主要用于nginx实现防盗链。
+
+以下基于linux系统下，安装Nginx的HttpAccessKeyModule模块
+
+★下载模块压缩包：
+#wget http://wiki.nginx.org/images/5/51/Nginx-accesskey-2.0.3.tar.gz (下载)
+#tar zxvf Nginx-accesskey-2.0.3.tar.gz                               (解压)
+
+git clone https://github.com/olcms2016/nginx-accesskey
+cd nginx-accesskey/                         (切换目录)
+
+解压此文件后，找到nginx-accesskey下的config文件。
+编辑此文件：替换其中的"$HTTP_ACCESSKEY_MODULE"为"ngx_http_accesskey_module"
+vi config
+修改结果如下：
+#HTTP_MODULES="$HTTP_MODULES $HTTP_ACCESSKEY_MODULE"
+HTTP_MODULES="$HTTP_MODULES ngx_http_accesskey_module"
+
+★在已安装的情况下添加（https://github.com/Butterfly1000/Excellent-operation/blob/master/yum%E5%AE%89%E8%A3%85nginx%E6%B7%BB%E5%8A%A0%E6%A8%A1%E5%9D%97）
+1.备份
+mv /usr/sbin/nginx /usr/sbin/nginx.20200701
+cp -r /etc/nginx /etc/nginx.20200701
+
+2.进入nginx源码安装包重新编译，注意只要make，不能make install！！！nginx -V已存在的模块后加上--add-module=/usr/local/src/nginx-accesskey
+./configure 
+--prefix=/etc/nginx --sbin-path=/usr/sbin/nginx --modules-path=/usr/lib64/nginx/modules --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --http-log-path=/var/log/nginx/access.log --pid-path=/var/run/nginx.pid --lock-path=/var/run/nginx.lock --http-client-body-temp-path=/var/cache/nginx/client_temp --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --user=nginx --group=nginx --with-compat --with-file-aio --with-threads --with-http_addition_module --with-http_auth_request_module --with-http_dav_module --with-http_flv_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_mp4_module --with-http_random_index_module --with-http_realip_module --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_sub_module --with-http_v2_module --with-mail --with-mail_ssl_module --with-stream --with-stream_realip_module --with-stream_ssl_module --with-stream_ssl_preread_module --with-cc-opt='-O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector-strong --param=ssp-buffer-size=4 -grecord-gcc-switches -m64 -mtune=generic -fPIC' --with-ld-opt='-Wl,-z,relro -Wl,-z,now -pie' --add-module=/usr/local/src/nginx-accesskey
+
+3.文件替换，并重启
+以上成功后：
+cp objs/nginx /usr/sbin/
+nginx -s reload
+
+★测试
+修改nginx的conf文件，server{***}里边添加以下几行
+location /download {
+      accesskey             on;
+      accesskey_hashmethod  md5;
+       accesskey_arg         "key";
+       accesskey_signature   "mypass$remote_addr";
+} 
+其中：
+accesskey为模块开关；
+accesskey_hashmethod为加密方式MD5或者SHA-1；
+accesskey_arg为url中的关键字参数；
+accesskey_signature为加密值，此处为mypass和访问IP构成的字符串。
+
+然后，nginx -t没报错即可。
+
+访问测试脚本download.php：
+<?php
+$ipkey= md5("mypass".$_SERVER['REMOTE_ADDR']);
+//$ipkey生成的算法要跟配置文件的设置保持一致
+$output = "<a http://swoole.xxxx.xxx/static/live/imgs/team22.png?key=".$ipkey.">download_add_key</a>";
+
+echo $output;
+?>
+
+如果没生效，可再重启nginx（允许的情况下，可以关闭原进程，再开启）
+
+参考文章:
+https://www.cnblogs.com/duanxz/p/5121033.html
+https://www.cnblogs.com/shuaixf/archive/2011/11/14/2249061.html

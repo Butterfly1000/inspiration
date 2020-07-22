@@ -1,0 +1,48 @@
+首先laravel采用的也是mvc模式
+
+1.入口文件：public/index.php   (可以很好的保护源代码不被访问，tp3.2的弊端，tp5已解决)
+
+2.路由，这一块和tp3.2或tp5差别很大，tp3.2或tp5无需定义可以直接访问，而laravel必须定义。
+  laravel 则需要在routes/web.php 文件中定义如下：
+  Route::get('admin/index/index', 'Admin\IndexController@index');
+  
+  升级版：
+  
+  // Admin 模块
+  Route::group(['namespace' => 'Admin','prefix'=>'admin'],function (){
+      //首页
+      Route::group(['prefix'=>'index'],function () {
+          Route::get('index', 'IndexController@index');
+      });
+      //用户管理
+      Route::group(['prefix'=>'user'],function () {
+          Route::get('index', 'UserController@index');
+      });
+      //分类管理
+      Route::group(['prefix'=>'categoery'],function () {
+          Route::get('index', 'CategoeryController@index');
+      });
+  });
+  
+  
+ 解析：
+ 路由组允许你在大量路由之间共享路由属性，例如中间件或命名空间，而不需要为每个路由单独定义这些属性。共享属性应该以数组的形式传入 Route::group 方法的第一个参数中。
+ 可以用 prefix 方法为路由组中给定的 URL 增加前缀。
+ 
+ 3.控制器
+ laravel创建控制器是使用命令行的:
+ php artisan  make:controller IndexController
+ 
+ 使用命令行创建控制器的话直接加上目录:
+ php artisan  make:controller Home/IndexController
+ 
+ 中间件
+ 对于需要登录访问的情况，tp习惯性是创建一个基类，让各个控制器继承该基类，在基类做控制。
+ 在 laravel 中，则是使用了中间件的模式；
+  HTTP 中间件
+ 优点：
+ 1.中间件更加解耦；调用方便；职责也更加专一；
+ 2.对比着tp来理解的话；可以简单的把中间件比作是 **BaseController 中 __construct；
+ 3.所有的请求都要先通过定义的中间件；
+ 
+ 

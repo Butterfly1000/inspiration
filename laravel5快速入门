@@ -1,8 +1,10 @@
+简介：这篇文章是在我熟悉tp3.2及tp5的情况下，入手laravel5。
+
 首先laravel采用的也是mvc模式
 
-1.入口文件：public/index.php   (可以很好的保护源代码不被访问，tp3.2的弊端，tp5已解决)
+★1.入口文件：public/index.php   (可以很好的保护源代码不被访问，tp3.2的弊端，tp5已解决)
 
-2.路由，这一块和tp3.2或tp5差别很大，tp3.2或tp5无需定义可以直接访问，而laravel必须定义。
+★2.路由，这一块和tp3.2或tp5差别很大，tp3.2或tp5无需定义可以直接访问，而laravel必须定义。
   laravel 则需要在routes/web.php 文件中定义如下：
   Route::get('admin/index/index', 'Admin\IndexController@index');
   
@@ -29,7 +31,7 @@
  路由组允许你在大量路由之间共享路由属性，例如中间件或命名空间，而不需要为每个路由单独定义这些属性。共享属性应该以数组的形式传入 Route::group 方法的第一个参数中。
  可以用 prefix 方法为路由组中给定的 URL 增加前缀。
  
- 3.控制器
+★3.控制器
  laravel创建控制器是使用命令行的:
  php artisan  make:controller IndexController
  
@@ -45,4 +47,172 @@
  2.对比着tp来理解的话；可以简单的把中间件比作是 **BaseController 中 __construct；
  3.所有的请求都要先通过定义的中间件；
  
+ 针对视图传递参数、访问，
+ $assign = [
+    'title' => '文章的标题',
+    'content' => '文章的内容'
+];
+return view('admin.index.index', $assign);
+ 
+★4.模型
+   数据库特点、连接及迁移
+   
+   laravel的数据库部分有一个很大的优点是使用了全球最先进的Eloquent ORM；
+   她让数据库的操作变的简单安全且无懈可击；
+   laravel的数据库部分有一个很大的缺点是使用了全球最先进的Eloquent ORM；
+   她让数据库的操作变的缓慢笨重且无药可救；
+   
+   首先是连接数据库；
+   默认是 mysql；
+   直接修改根目录下的.env文件中的 DB_HOST、DB_PORT、DB_DATABASE、DB_USERNAME、DB_PASSWORD；
+   
+   注意：
+   在使用 laravel 的时候我们不能直接操作数据库创建表；
+   而是要通过数据库迁移 Migrations ；
+   优点:
+   记录保留sql操作记录=>在团队项目显得更为重要
+   
+   看着开发文档再参考 database/migrations 目录下自带的 user 表迁移文件；
+   命令：
+   php artisan make:migration create_表名的复数形式_table
+   
+   还有就是表最好都加上 created_at 、 updated_at;
+   如果需要软删除加上deleted_at；
+   分别用于记录此条数据创建、修改、删除的时间；
+   --------
+   查询差异：
+   
+   M('articles')          tp3.2    =>   DB('articles')       tp5
+    ->field('id, title, user_id')
+    ->where('id < 100')
+    ->group('title')
+    ->order('id desc')
+    ->having('id > 5')
+    ->limit(10)
+    ->select();
+    // ->count();
+
+   use Illuminate\Support\Facades\DB;
+ 
+   DB::table('articles')
+    ->select('id', 'title', 'user_id')
+    ->where('user_id', 1)
+    ->groupBy('title')
+    ->orderBy('id', 'desc')
+    ->having('id', '>', 5)
+    ->limit(10)
+    ->get();
+    // ->count(); 
+  
+   1.先说方法名：
+    去掉相同的:where、having、limit、count这几个方法名在两个框架中都是完全一样的；
+    再去掉只是在后面加个 By 的 orderBy 和 groupBy；
+    
+    最后我们只需要记住的 限制取出数据的字段：
+        thinkphp 用的是 field();
+        laravel 用的是 select();
+    表示取出数据的方法：
+        thinkphp 用的是 select();
+        laravel 用的是 get();
+        
+   2.接着再来搞定参数：
+    laravel 则把 sql 拆分成多个参数；
+    比如就参考上面代码的 where 或者 having；
+    比较复杂的则是 where；
+     tp:
+     ->where(['id' => ['gt', 20], 'user_id' => ['in', [1, 2, 3]]])
+     
+     laravel:
+     ->where('id', '>', 20)
+     ->whereIn('user_id', [1, 2, 3])
+    
+    还有 whereNotIn、whereBetween 等等同理；
+  
+   3.最后来说下查询获取得到的值:
+   laravel 得到的则是一个 Collection 对象；
+   刚开始的时候如果实在不习惯 Collection ；
+   可以调用 ->toArray() 方法把集合转成数组；
+   建议使用 Collection 集合。
+   -----------------
+   模型使用：
+   
+   模型文件的命名则是使用单词的单数形式；
+   对于有下划线的表名需要写成驼峰形式；
+   比如说 article_tags 表的模型文件名是 ArticleTag；
+   
+   依然不需要手动去创建模型文件；
+   laravel 贴心的为我们准备好了命令行：
+   php artisan make:model Article
+   
+   优化处理：
+   php artisan make:model Models/Article
+   
+   既然都说建议使用模型了；
+   那不是每次都要先创建迁移文件再创建模型文件；
+   虽然是通过命令行但是需要敲两条命令也挺烦。
+   所以，
+   laravel 很贴心的为我们准备好了命令行：
+   php artisan make:model Models/Article -m
+   
+   这样在创建模型的命令后面加个 -m，就可以同时创建迁移文件和模型文件。
+   -----------------
+   验证：
+   
+   tp： request请求 -> controller -> model验证 -> 模型对数据库的操作
+   laravel：request请求 -> validation验证 -> controller -> model模型数据库操作 
+   
+   可以看到 laravel 把验证这部分单独拿出来了。
+   
+   自动完成在 laravel 中有两种实现方式：
+   第一种是比较规则的：
+   比如说articles表中有个tag_id字段是记录这篇文章属于哪个标签的,那么tag_id字段会有多个标签id，假设使用json方式存储，那么tag_id提交的时候数据是数组格式。
+   这种场景可以直接使用属性类型转换,
+   在模型文件中定义casts:
+    /**
+     * 属性类型
+     *
+     * @var array
+     */
+    protected $casts = [
+        'tag_id' => 'array',
+    ];
+    
+    更多定义的属性参考开发文档的存储器部分；
+    当然如果更复杂的,我们可以自定义访问器和存储器。
+    下面手动定义一个访问器和存储器实现属性类型的功能；
+    命名的规则就是get/set字段名Attribute；
+    /**
+     * 存入数据库的时候；把数组转成 json
+     *
+     * @param  string  $value
+     * @return void
+     */
+    public function setTagIdAttribute($value)
+    {
+        $this->attributes['tag_id'] = json_encode($value);
+    }
+
+    /**
+     * 获取数据时把json转成php数组
+     *
+     * @param  string  $value
+     * @return string
+     */
+    public function getTagIdAttribute($value)
+    {
+        return json_decode($value, true);
+    }
+    
+    laravel 控制器的方法是可以直接传模型的；这涉及到一个概念叫依赖注入。
+
+    需要先 use App\Models\Article;
+    /**
+     * 控制器中的index方法
+     */
+    public function index(Article $articleModel){
+       $articleModel->getArticleList();
+    }
+    
+★5.视图
+   
  

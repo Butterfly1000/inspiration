@@ -1,0 +1,29 @@
+ELK是Elasticsearch、Logstash、Kibana的简称，这三者是核心套件，但并非全部。
+
+Elasticsearch是实时全文搜索和分析引擎，提供搜集、分析、存储数据三大功能；是一套开放REST和JAVA API等结构提供高效搜索功能，可扩展的分布式系统。它构建于Apache Lucene搜索引擎库之上。
+
+Logstash是一个用来搜集、分析、过滤日志的工具。它支持几乎任何类型的日志，包括系统日志、错误日志和自定义应用程序日志。它可以从许多来源接收日志，这些来源包括 syslog、消息传递（例如 RabbitMQ）和JMX，
+它能够以多种方式输出数据，包括电子邮件、websockets和Elasticsearch。
+
+Kibana是一个基于Web的图形界面，用于搜索、分析和可视化存储在 Elasticsearch指标中的日志数据。它利用Elasticsearch的REST接口来检索数据，不仅允许用户创建他们自己的数据的定制仪表板视图，还允许他们以
+特殊的方式查询和过滤数据
+
+简述：
+
+Logstash：负责日志的收集，处理和储存
+
+Elasticsearch：负责日志检索和分析
+
+Kibana：负责日志的可视化
+
+上面配置信息直接工具图形化界面查询的确很方便，如果想自己定制化使用到指定的后台管理，就需要自己去开发编程去采集数据并拿回来展示。
+
+es收集的数据虽然可以在kibina里展示，但是要局限也比较大，不能用kibina展示的只能自己动手写web展示了，利用php读取elasticsearch数据，经过处理成echarts图表数据通过web界面展示。
+这里展开阐述一下es采集
+
+
+
+作者：Charles_ed65
+链接：https://www.jianshu.com/p/a36101fce915
+来源：简书
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。

@@ -29,8 +29,25 @@ cookie一般是在用户请求页面时生成的，但不是只有该页面才�
 在/web/admin/index.html中设置的cookie值，/web/admin/articles/index.html可以访问。但/web/admin/articles/index.html设置的内容，
 /web/admin/index.html不能访问哦。
 
-2.域名
-顶级域名的cookie内容，子域名可以访问，子域名之间不可相互访问。
+2.域名（默认同级目录，亲测成功！！！谷歌浏览器）
+顶级域名的cookie内容，子域名可以访问，子域名之间不可相互访问。且顶级域名无法访问子域名cookie。
+这个还是有必要说明一下，
+举例：
+test.qdgg.com
+my.qdgg.com
+那么顶级域名就是.qdgg.com
+
+设置（在*.qdgg.com中，就是可以是test.qdgg.com，my.qdgg.com等等）
+例如：http://test.qdgg.com:8092/test/setcookie
+内容：
+setcookie('name','James',0,'/','qdgg.com'); 或  setcookie('name','James',0,'/','.qdgg.com');
+这时候，会在浏览器cookie生成qdgg.com的cookie，*.qdgg.com均可以访问。
+
+设置顶级域名的时候“注意！！”，一定要符合自身，例如test.qdgg.com域名做设置，setcookie的domain参数不能是除自身(test.qdgg.com)外的同级，比如www.qdgg.com,my.qdgg.com等等，
+不会生效。且不能是qqdd.com这种无相关的顶级域名。
+
+同理，test.test.qdgg.com可以设置，test.qdgg.com为顶级域名，当然qdgg.com也可以，但www.qdgg.com无效。如果test.qdgg.com和qdgg.com都设置了相同参数，
+顶级优先原则，读取qdgg.com域名下的内容，除非qdgg.com被删除，才读取test.qdgg.com的内容。(还一并实验了my.test.test.qdgg.com,设置test.test.qdgg.com成功！！)
 
 3.端口
 同一域名，不同端口，不可相互访问。
@@ -52,7 +69,6 @@ cookie一般是在用户请求页面时生成的，但不是只有该页面才�
 2.删除cookie后，浏览器的cookie会消失（设置里面查看不到）。
 3.如果父目录下文件创建setcookie('name','zms')，则父类目录下文件和子目录下文件均可以访问，得到的结果都是zms，这时候子目录下文件创建setcookie('name','zzh')，则
 父目录下文件仍获取到'zms'(父类访问不到子类)，子类目录下文件读取的则是’zzh‘。当然，这时相同索引名，这时子类目录下文件依然可以获取父类目录设置的“未重叠”的cookie索引的值。
-4.
 
 那么，如果需要cookie实现跨域访问呢？
 方案：
@@ -89,12 +105,14 @@ location /web2 {
     log_subrequest on;
 }
 
-这样通过反向代理，http://web.com/web1和http://web.com/web2（相同域名，相同目录/下，可以相互访问），具体逻辑细节待梳理
+而在设置cookie的时候，使用了path参数，将cookie保存的路径都放在/下面，这样/web1和/web2都可以读取到/下面的cookie。
+
+然后通过反向代理，因此http://web.com/web1和http://web.com/web2（相同域名，记录在父级目录/下，可以相互访问），反向代理将cookie进行传递到真实地址。
 
 2.解决cookie跨域问题之JSONP请求
-
+（待完善）
 
 参考：https://blog.csdn.net/chou_out_man/article/details/80664413
      https://www.cnblogs.com/ysocean/p/9392908.html
-
+     https://segmentfault.com/a/1190000006932934
 

@@ -1,0 +1,100 @@
+2020.10.26 星期一 天气晴
+距离上一篇内容，9.5，已经大概快1个月没更新内容了。倒不是完全抛弃学习，而是有一些新的事物需要接触，了解，以及整理。
+--------------------------------------------------------
+
+cookie简单描述
+因为，http协议通信是无状态通信，但这种没有任何记录的通信，在应对例如用户登录这种需要记录的场景就会很无力，所以cookie就诞生了。
+cookie应用如下，
+1.浏览器(客户端)发送请求给服务器
+2.服务器返回id给浏览器（客户端），浏览器记录在cookie里面（cookie是保存在浏览器中哦）
+3.浏览器发出带id参数请求(id从浏览器的cookie里面获取)给服务器
+这样就实现了，用户登录这种需要记录状态的通信。
+
+当然，cookie的内容是保留在浏览器，容易被获取，所以安全性低。因此，部分安全性高的场景会用session代替。session是如何实现呢？
+客户端通过传输保存在cookie里面的session_id参数（加密），请求服务器，服务器通过session_id读取服务器中的session值，由于session的内容是保存在服务器，安全性较高。
+
+
+cookie的访问
+cookie一般是在用户请求页面时生成的，但不是只有该页面才能访问cookie。
+1.路径（这个默认是相同域名）亲测验证！！！
+同目录下，可以访问，例如：
+/web/admin/index.html (目录：/web/admin/)
+/web/admin/info.html(目录：/web/admin/)
+/web/home/index.html(目录：/web/home/)
+在/web/admin/index.html中设置的cookie值，info.html可以访问，但/web/home/index.html不能。
+
+子目录可以访问父目录设置的cookie，但父目录不可以访问子目录设置的cookie
+/web/admin/index.html (目录：/web/admin/)
+/web/admin/articles/index.html (目录：/web/admin/articles)
+在/web/admin/index.html中设置的cookie值，/web/admin/articles/index.html可以访问。但/web/admin/articles/index.html设置的内容，
+/web/admin/index.html不能访问哦。
+
+2.域名
+顶级域名的cookie内容，子域名可以访问，子域名之间不可相互访问。
+
+3.端口
+同一域名，不同端口，不可相互访问。
+
+4.域名和域名对应的ip，不可相互访问。
+
+5.不同域名，不可相互访问。
+
+6.https和http，其他这个问题应该很明显了，443端口和80端口，对应第3点。
+
+验证方式：
+如果，你手头没有那么多服务器，项目，域名，如何简单验证呢？
+1.因为，cookie是保存在浏览器，所以你可以从浏览器看有哪些cookie。
+以Chrome浏览器（谷歌）为例：设置--隐私设置和安全性—cookie及其他网站数据—查看所有cookie和网站数据。
+2.通过修改hosts文件，你将拥有众多域名，可以测试。
+
+几个实践知识点：
+1.如果页面未设置cookie，即使访问页面也不会在浏览器中自动创建其域名下的cookie。
+2.删除cookie后，浏览器的cookie会消失（设置里面查看不到）。
+3.如果父目录下文件创建setcookie('name','zms')，则父类目录下文件和子目录下文件均可以访问，得到的结果都是zms，这时候子目录下文件创建setcookie('name','zzh')，则
+父目录下文件仍获取到'zms'(父类访问不到子类)，子类目录下文件读取的则是’zzh‘。当然，这时相同索引名，这时子类目录下文件依然可以获取父类目录设置的“未重叠”的cookie索引的值。
+4.
+
+那么，如果需要cookie实现跨域访问呢？
+方案：
+1.反向代理（nginx反向代理，这边就讲这个，其他可以自行学习）
+科普一下吧：
+反向代理和正向代理的区别就是：正向代理代理客户端，反向代理代理服务器。
+简单说，正向代理就是VPN,代理客户端（以VPN为例，接受客户端请求，然后将请求发给服务器），这种情况服务器是不知情的，会以VPN指定发送的服务器为客户端，这时候只要VPN指定的服务器是美国的IP就
+可以访问谷歌了。
+反向代理，代理的是服务端，客户端并不知情，代理服务器接受客户端请求，然后传给原始服务器，得到原始服务器的响应后，回传给客户端。
+举例说明：
+前提：
+web1 => test.qdgg.com
+web2 => wd.qdgg.com
+server_name  web.com;
+
+这时候web1,web2明显不是相同域名（这边是qdgg.com的子域名，但也可以是完全不相干的），直接不是不可以相互访问cookie的。
+进行如下配置：
+location /web1 {
+    proxy_pass http://web1;
+    proxy_set_header Host  127.0.0.1;
+    proxy_set_header   X-Real-IP        $remote_addr;
+    proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
+
+    proxy_set_header Cookie $http_cookie;
+    log_subrequest on;
+}
+
+location /web2 {
+    proxy_pass http://web2;
+    proxy_set_header Host  127.0.0.1;
+    proxy_set_header   X-Real-IP        $remote_addr;
+    proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
+    proxy_set_header Cookie $http_cookie;
+    log_subrequest on;
+}
+
+这样通过反向代理，http://web.com/web1和http://web.com/web2（相同域名，相同目录/下，可以相互访问），具体逻辑细节待梳理
+
+2.解决cookie跨域问题之JSONP请求
+
+
+参考：https://blog.csdn.net/chou_out_man/article/details/80664413
+     https://www.cnblogs.com/ysocean/p/9392908.html
+
+

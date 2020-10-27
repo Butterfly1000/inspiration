@@ -7,4 +7,131 @@ InfluxDB 是什么？
 InfluxDB 是用Go语言编写的一个开源分布式时序、事件和指标数据库，无需外部依赖。
 
 既然是操作篇，就讲讲语句(增删改查)，它和mysql还是很相似的。
+现附上参考链接：https://www.hellodemos.com/hello-influxdb/influxdb-getting-start.html
+安装，启动问题都可以从上述链接了解及完成。
 
+数据结构：databse（数据库），measurement（表），retention policy（保存策略），points（表里面的一行数据）
+        points内容：time 记录时间
+                   fields 记录值
+                   tag 标签（索引）
+                   series
+
+创建数据库：create database <数据库名>
+查看数据库：show databases
+切换到某数据库：use <数据库名>
+删除数据库：drop <数据库名>
+
+写入（增）：
+insert <measurement>[,<tag-key>=<tag-value>...] <field-key>=<field-value>[,<field2-key>=<field2-value>...] [unix-nano-timestamp]
+<>必须
+[]非必须
+measurement表名必须（首次插入时候自动创建，不需要单独创建）
+tag索引（可选）
+fields记录值（必须，至少一个）
+time（可选，没有系统会默认生成）
+实例：
+创建的数据库egg（蛋），新建一张表shell（壳），索引species（物种，哪种动物的蛋），is_success（是否成功孵化了），值length（cm），hardness硬度（级别1-10）。
+insert shell,species=chicken,is_success=0 length=7,hardness=5 1422568543702900257
+
+注意：首次插入的字段格式会定型该字段格式，例如首次age字段插入的是7，整形，第二次age字段插入'七岁'，字符串就会报错。
+
+查询：
+select "species","is_success","length","hardness" from shell
+或
+select species,is_success,length,hardness from shell
+
+查询全部数据同样可以用*
+select * from shell
+
+查看所有表：
+show measurements
+
+删除字段：（目前不支持，曲线方案,但tag会消息，变成fields）
+例如：要删除field3字段
+> select tag1, tag2, field1, field2 into tmp from old_measurement; # 除过field3列的数据转移到临时"表"上
+> drop measurement old_measurement; # 删除旧"表"
+> select * into old_measurement from tmp; # 数据转移到旧"表"
+> drop measurement tmp; # 删除临时"表"
+
+查看索引：show tag keys from <表名>
+
+修改已有的记录（fields值），目前不支持修改tag哦：
+重新insert覆盖，但要注意，条件是time(必须存在)，tag的值必须和之前一直。
+insert shell,species=chicken,is_success=1 length=7,hardness=6 1603334399745678000
+修改length为7.5，hardness为7。索引species=chicken,is_success=1 时间1603334399745678000均不变。
+insert shell,species=chicken,is_success=1 length=7.5,hardness=7 1603334399745678000
+成功覆盖修改。
+
+表：
+time                hardness is_success length species
+----                -------- ---------- ------ -------
+1603334399745678000 7        1          10     chicken
+1603334399746778000 7        1          10     chicken
+1603334399776778000 6        1          8      chicken
+
+>>>where后面的条件字段仅是field，不能是tag
+
+>>>distinct的字段仅是field，不能是tag
+select distinct(hardness) from shell
+time distinct
+---- --------
+0    7
+0    6
+
+>>>group by仅是tag 不能是field(不生效)
+select * from shell group by is_success
+
+tags: is_success=0
+time                hardness length species
+----                -------- ------ -------
+1603334399776778000 6        8      bird
+
+tags: is_success=1
+time                hardness length species
+----                -------- ------ -------
+1603334399745678000 7        10     chicken
+1603334399746778000 7        10     chicken
+1603334399776778000 6        8      chicken
+
+>>>查询单个tag的value值
+##查询所以tag为bird的values的值
+> show tag values from shell with key="species"
+  show tag values from <表名> with key=<索引名>
+
+key     value
+---     -----
+species bird
+species chicken
+
+>>>模糊查询
+## =~/给定字段/ 包含指定字段的
+select * from shell where species ~/br/
+##=~/^给定字段/ 以指定字段开始的
+select * from shell where length ~/^1/
+##=~/给定字段$/ 以指定字段结尾的
+select * from shell where length ~/0$/
+
+>>>limit offset
+limit 2 offset 2，就是从第2行开始之后的2条数据(3,4)
+select * from shell limit 2 offset 2
+
+>>>influxDB没有IN操作，但是有OR和AND（用于where条件）
+
+小记录：
+fields：where、distinct
+tag：group by
+
+>>>删除某一行数据
+DELETE FROM <measurement_name> WHERE [<tag_key>='<tag_value>'] | [<time interval>]
+##delete语句和我们常见sql语法有点像，但是注意一下上面的where中的条件，只允许根据tag和时间来进行删除操作
+delete from shell where time<=1603334399745678000
+delete from shell where "species"='bird' (注意，tag要双引号，值要单引号)
+
+influxdb支持http，通过curl进行访问。可下载可视化工具辅助。
+下章补充：InfluxDB - 连续查询CQ和保留策略RP
+
+
+参考文档：
+https://blog.csdn.net/lifen0908/article/details/105293839/
+https://www.cnblogs.com/yihuihui/p/11386689.html
+https://www.cnblogs.com/yihuihui/p/11386685.html

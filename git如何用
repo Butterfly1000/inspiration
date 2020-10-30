@@ -1,0 +1,26 @@
+快速入门
+假设：远程仓库有，测试环境dev分支，正式环境master分支
+任务：开发一个新功能
+
+checkout master分支（从远程复制到本地），new w-func（new一个功能分支）
+为什么要从master上面new呢？
+1.因为这样new的内容就是master分支内容，方便最后合并到master分支；
+2.master分支一般是最纯净的，dev分支还会存在已修改单还未打算上线的内容；
+3.从master分支new的内容较为纯净，最后合并到dev基本问题也很少。
+
+在w-func分支上完成功能开发后，merge到dev分支（先切到dev分支，再git merge w-func），然后提交测试。
+测试通过，再将w-func分支合并到master分支（先切到master分支，再git merge w-func），上线的话，记得打上tag哦。
+
+commit(记得备注提交原因)+push的操作就简单这样带咯。
+
+》》》》》》》》》》》》》》》》》》》
+
+Git工作流程
+Git 作为一个源码管理系统，不可避免涉及到多人协作。
+trunk repositroy 树干仓库（理解为总仓库，就是各类分支都在这）
+your github repository 你要clone的分支仓库（总仓库中的某个分支仓库，例如：master，dev等等）
+local repository 本地仓库
+
+
+
+
